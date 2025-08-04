@@ -25,6 +25,8 @@ SOFTWARE.*/
 #pragma once
 #include <DX3D/Core/Core.h>
 #include <DX3D/Core/Base.h>
+#include <DX3D/Math/Vec3.h>
+#include <DX3D/Math/Vec4.h>
 
 namespace dx3d
 {
@@ -38,6 +40,12 @@ namespace dx3d
 		GraphicsDevice& getGraphicsDevice() noexcept;
 
 		void render(SwapChain& swapChain);
+	private:
+		struct Vertex
+		{
+			Vec3 position;
+			Vec4 color;
+		};
 	private:
 		std::shared_ptr<GraphicsDevice> m_graphicsDevice{};
 		DeviceContextPtr m_deviceContext{};

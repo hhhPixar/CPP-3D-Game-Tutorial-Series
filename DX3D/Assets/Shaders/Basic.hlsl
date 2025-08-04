@@ -22,20 +22,28 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.*/
 
-#pragma once
-#include <DX3D/Graphics/GraphicsResource.h>
-
-namespace dx3d
+struct VSInput
 {
-	class ShaderBinary final: public GraphicsResource
-	{
-	public:
-		ShaderBinary(const ShaderCompileDesc& desc, const GraphicsResourceDesc& gDesc);
-		BinaryData getData() const noexcept;
-		ShaderType getType() const noexcept;
-	private:
-		Microsoft::WRL::ComPtr<ID3DBlob> m_blob{};
-		ShaderType m_type{};
-	};
+    float3 position : POSITION0;
+    float4 color : COLOR0;
+};
+
+struct VSOutput
+{
+    float4 position : SV_Position;
+    float4 color : COLOR0;
+};
+
+
+VSOutput VSMain(VSInput input)
+{
+    VSOutput output;
+    output.position = float4(input.position, 1);
+    output.color = input.color;
+    return output;
 }
 
+float4 PSMain(VSOutput input) : SV_Target
+{
+    return input.color;
+}
