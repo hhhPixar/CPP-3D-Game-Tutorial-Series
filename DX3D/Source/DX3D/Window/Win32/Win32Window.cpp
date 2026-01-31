@@ -41,11 +41,6 @@ static LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT msg, WPARAM wparam, LPAR
 	return 0;
 }
 
-
-
-
-
-
 dx3d::Window::Window(const WindowDesc& desc) : Base(desc.base), m_size(desc.size)
 {
 	auto registerWindowClassFunction = []()

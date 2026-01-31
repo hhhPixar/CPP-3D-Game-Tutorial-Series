@@ -22,23 +22,22 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.*/
 
-#pragma once
-#include <DX3D/Graphics/GraphicsResource.h>
-#include <d3dcompiler.h>
+#include <DX3D/Graphics/ConstantBuffer.h>
 
-namespace dx3d
+dx3d::ConstantBuffer::ConstantBuffer(const ConstantBufferDesc& desc, const GraphicsResourceDesc& gDesc): 
+	GraphicsResource(gDesc), m_size(desc.bufferSize)
 {
-	class VertexShaderSignature final: public GraphicsResource
-	{
-	public:
-		VertexShaderSignature(const VertexShaderSignatureDesc& desc, const GraphicsResourceDesc& gDesc);
-		BinaryData getShaderBinaryData() const noexcept;
-		BinaryData getInputElementsData() const noexcept;
-	private:
-		RefPtr<ShaderBinary> m_vsBinary{};
-		Microsoft::WRL::ComPtr<ID3D11ShaderReflection> m_shaderReflection{};
-		D3D11_INPUT_ELEMENT_DESC m_elements[D3D11_STANDARD_VERTEX_ELEMENT_COUNT]{};
-		ui32 m_numElements{};
-	};
-}
+	if (!desc.bufferSize) DX3DLogThrowInvalidArg("Buffer size must be non-zero.");
 
+	D3D11_BUFFER_DESC buffDesc{};
+	buffDesc.Usage = D3D11_USAGE_DYNAMIC;
+	buffDesc.ByteWidth = desc.bufferSize;
+	buffDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	buffDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+
+	D3D11_SUBRESOURCE_DATA initData{};
+	initData.pSysMem = desc.buffer;
+
+	DX3DGraphicsLogThrowOnFail(m_device.CreateBuffer(&buffDesc, (desc.buffer)?&initData:nullptr, &m_buffer),
+		"CreateBuffer failed.");
+}

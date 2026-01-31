@@ -34,7 +34,7 @@ namespace dx3d
 
 		SwapChain& getSwapChain() noexcept;
 	private:
-		SwapChainPtr m_swapChain{};
+		RefPtr<SwapChain> m_swapChain{};
 	};
 }
 

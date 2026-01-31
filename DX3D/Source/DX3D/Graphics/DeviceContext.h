@@ -36,6 +36,8 @@ namespace dx3d
 		void setGraphicsPipelineState(const GraphicsPipelineState& pipeline);
 		void setVertexBuffer(const VertexBuffer& buffer);
 		void setViewportSize(const Rect& size);
+		void setConstantBuffer(const ConstantBuffer& buffer);
+		void updateConstantBuffer(const ConstantBuffer& buffer, const void* data);
 		void drawTriangleList(ui32 vertexCount, ui32 startVertexLocation);
 	private:
 		Microsoft::WRL::ComPtr<ID3D11DeviceContext> m_context{};

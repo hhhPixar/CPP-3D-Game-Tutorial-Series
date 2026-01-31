@@ -24,7 +24,6 @@ SOFTWARE.*/
 
 #include <DX3D/All.h>
 
-
 int main()
 {
 	try
@@ -48,8 +47,6 @@ int main()
 	{
 		return EXIT_FAILURE;
 	}
-
-
 
 	return EXIT_SUCCESS;
 }

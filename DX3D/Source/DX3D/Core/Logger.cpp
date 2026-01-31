@@ -27,8 +27,6 @@ SOFTWARE.*/
 
 dx3d::Logger::Logger(LogLevel logLevel): m_logLevel(logLevel)
 {
-	std::clog << "PardCode | C++ 3D Game Tutorial Series" << "\n";
-	std::clog << "--------------------------------------" << "\n";
 }
 
 dx3d::Logger::~Logger()
