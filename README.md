@@ -73,7 +73,7 @@ If you wish to modify and redistribute the source code files, you may optionally
 C++ 3D Game Tutorial Series (https://github.com/PardCode/CPP-3D-Game-Tutorial-Series)
 <project name>, <website link or nothing>
   
-Copyright (c) 2019-2025, PardCode
+Copyright (c) 2019-2026, PardCode
 Copyright (c) <your years>, <your name>  
 ...
 ```
