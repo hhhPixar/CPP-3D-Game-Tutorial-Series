@@ -49,6 +49,7 @@ namespace dx3d
 	class VertexBuffer;
 	class VertexShaderSignature;
 	class ConstantBuffer;
+	class IndexBuffer;
 
 	using i32 = int;
 	using ui32 = unsigned int;

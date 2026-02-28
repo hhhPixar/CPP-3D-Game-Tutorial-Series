@@ -22,46 +22,28 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.*/
 
-#pragma once
-#include <DX3D/Core/Core.h>
-#include <DX3D/Core/Base.h>
-#include <DX3D/Math/Vec3.h>
-#include <DX3D/Math/Vec4.h>
-#include <DX3D/Math/Mat4x4.h>
+#include <DX3D/Graphics/IndexBuffer.h>
+#include <DX3D/Graphics/GraphicsUtils.h>
 
-namespace dx3d
+dx3d::IndexBuffer::IndexBuffer(const IndexBufferDesc& desc, const GraphicsResourceDesc& gDesc) : GraphicsResource(gDesc), m_listSize(desc.indexListSize)
 {
-	class GraphicsEngine final: public Base
-	{
-	public:
-		explicit GraphicsEngine(const GraphicsEngineDesc& desc);
-		virtual ~GraphicsEngine() override;
+	if (!desc.indexList) DX3DLogThrowInvalidArg("No index list provided.");
+	if (!desc.indexListSize) DX3DLogThrowInvalidArg("Index list size must be non-zero.");
 
+	D3D11_BUFFER_DESC buffDesc{};
+	buffDesc.ByteWidth = desc.indexListSize * sizeof(ui32);
+	buffDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 
-		GraphicsDevice& getGraphicsDevice() noexcept;
+	D3D11_SUBRESOURCE_DATA initData{};
+	initData.pSysMem = desc.indexList;
 
-		void render(SwapChain& swapChain, f32 deltaTime);
-	private:
-		struct Vertex
-		{
-			Vec3 position;
-			Vec4 color;
-		};
-		struct alignas(16) ConstantData
-		{
-			Mat4x4 world{};
-			Mat4x4 proj{};
-		};
-
-	private:
-		RefPtr<GraphicsDevice> m_graphicsDevice{};
-		RefPtr<DeviceContext> m_deviceContext{};
-		RefPtr<GraphicsPipelineState> m_pipeline{};
-		RefPtr<VertexBuffer> m_vb{};
-		RefPtr<ConstantBuffer> m_cb{};
-		RefPtr<IndexBuffer> m_ib{};
-
-		f32 m_rot{}, m_scale{}, m_pos{ 0.0f };
-	};
+	DX3DGraphicsLogThrowOnFail(m_device.CreateBuffer(&buffDesc, &initData, &m_buffer),
+		"CreateIndexBuffer failed.");
 }
+
+dx3d::ui32 dx3d::IndexBuffer::getIndexListSize() const noexcept
+{
+	return m_listSize;
+}
+
 
