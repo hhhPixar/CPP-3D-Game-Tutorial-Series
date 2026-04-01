@@ -22,32 +22,36 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.*/
 
-#include "MainGame.h"
+#pragma once
+#include <DX3D/Core/Common.h>
+#include <DX3D/Core/Base.h>
 
+#define dx3d_typeid(Class) \
+public:\
+using type_id_tag = Class;\
+static size_t GetTypeId()\
+{\
+	static const auto id = typeid(Class).hash_code();\
+	return id;\
+}\
+size_t getTypeId() const noexcept override\
+{\
+	return GetTypeId();\
+}
 
-int main()
+namespace dx3d
 {
-	try
+	class Identifiable : public Base
 	{
-		MainGame game({ {1280,720},dx3d::Logger::LogLevel::Info });
-		game.run();
-	}
-	catch (const std::runtime_error&)
-	{
-		return EXIT_FAILURE;
-	}
-	catch (const std::invalid_argument&)
-	{
-		return EXIT_FAILURE;
-	}
-	catch (const std::exception&)
-	{
-		return EXIT_FAILURE;
-	}
-	catch (...)
-	{
-		return EXIT_FAILURE;
-	}
-
-	return EXIT_SUCCESS;
+	public:
+		explicit Identifiable(const BaseDesc& desc) :
+			Base(desc)
+		{
+		}
+		virtual size_t getTypeId() const noexcept = 0;
+	};
+	
+	template <typename T>
+	concept HasTypeId =
+		std::is_same_v<typename T::type_id_tag, T>;
 }

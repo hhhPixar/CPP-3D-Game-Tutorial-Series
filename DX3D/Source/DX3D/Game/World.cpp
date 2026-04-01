@@ -22,53 +22,63 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.*/
 
-#include <DX3D/Game/Game.h>
-#include <DX3D/Window/Window.h>
-#include <DX3D/Graphics/GraphicsEngine.h>
-#include <DX3D/Core/Logger.h>
-#include <DX3D/Game/Display.h>
 #include <DX3D/Game/World.h>
 #include <DX3D/Game/GameObject.h>
 
-dx3d::Game::Game(const GameDesc& desc)
+dx3d::World::World(const WorldDesc& desc) : Base(desc.base)
 {
-	m_logger = std::make_unique<Logger>(desc.logLevel);	
-
-	DX3DLogInfo("PardCode | C++ 3D Game Tutorial Series");
-	DX3DLogInfo("--------------------------------------");
-
-	m_graphicsEngine = std::make_unique<GraphicsEngine>(GraphicsEngineDesc{*m_logger});
-	m_display = std::make_unique<Display>(DisplayDesc{ {*m_logger,desc.windowSize},m_graphicsEngine->getGraphicsDevice()});
-	m_world = std::make_unique<World>(WorldDesc{ {*m_logger} });
-
-	DX3DLogInfo("Game initialized.");
 }
 
-dx3d::Game::~Game()
+void dx3d::World::update(f32 deltaTime)
 {
-	DX3DLogInfo("Game is shutting down...");
+	if (m_events.size())
+	{
+		std::swap(m_events, m_eventsSwapBuffer);
+		std::swap(m_pendingObjects, m_pendingObjectsSwapBuffer);
+
+		for (auto& e : m_eventsSwapBuffer)
+		{
+			auto objTypeId = e.object->getTypeId();
+			auto pendingObjIndex = e.object->getWorldIndex();
+
+			if (e.eventType == EventType::Create)
+			{
+				auto& obj = m_pendingObjectsSwapBuffer[pendingObjIndex];
+				auto ptr = obj.get();
+
+				auto index = m_objects[objTypeId].size();
+				ptr->setWorldIndex(index);
+
+				m_objects[objTypeId].push_back(std::move(obj));
+
+				ptr->onCreate();
+			}
+		}
+
+		m_pendingObjectsSwapBuffer.clear();
+		m_eventsSwapBuffer.clear();
+	}
+
+	for (auto&& [typeId, objects] : m_objects)
+	{
+		for (auto& object : objects)
+		{
+			object->onUpdate(deltaTime);
+		}
+	}
 }
 
-dx3d::World& dx3d::Game::getWorld() noexcept
+dx3d::GameObject* dx3d::World::createGameObjectInternal(UniquePtr<GameObject>& object)
 {
-	return *m_world;
-}
+	if (!object) return {};
 
-dx3d::Logger& dx3d::Game::getLogger() noexcept
-{
-	return *m_logger;
-}
+	auto ptr = object.get();
 
-void dx3d::Game::onInternalUpdate()
-{
-	auto currentTime = std::chrono::steady_clock::now();
-	std::chrono::duration<f32> delta = currentTime - m_previousTime;
-	m_previousTime = currentTime;
-	auto deltaTime = delta.count();
+	auto index = m_pendingObjects.size();
+	ptr->setWorldIndex(index);
 
-	onUpdate(deltaTime);
+	m_pendingObjects.push_back(std::move(object));
+	m_events.push_back({ ptr, EventType::Create });
 
-	m_world->update(deltaTime);
-
-	m_graphicsEngine->render(m_display->getSwapChain(), deltaTime);
+	return ptr;
 }

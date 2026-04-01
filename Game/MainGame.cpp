@@ -23,31 +23,23 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.*/
 
 #include "MainGame.h"
+#include "Objects/MyObject.h"
 
 
-int main()
+MainGame::MainGame(const dx3d::GameDesc& desc) : dx3d::Game(desc)
 {
-	try
-	{
-		MainGame game({ {1280,720},dx3d::Logger::LogLevel::Info });
-		game.run();
-	}
-	catch (const std::runtime_error&)
-	{
-		return EXIT_FAILURE;
-	}
-	catch (const std::invalid_argument&)
-	{
-		return EXIT_FAILURE;
-	}
-	catch (const std::exception&)
-	{
-		return EXIT_FAILURE;
-	}
-	catch (...)
-	{
-		return EXIT_FAILURE;
-	}
+}
 
-	return EXIT_SUCCESS;
+void MainGame::onCreate()
+{
+	Game::onCreate();
+	auto& world = getWorld();
+
+	auto object = world.createGameObject<dx3d::GameObject>();
+	auto myObject = world.createGameObject<MyObject>();
+}
+
+void MainGame::onUpdate(dx3d::f32 deltaTime)
+{
+	Game::onUpdate(deltaTime);
 }

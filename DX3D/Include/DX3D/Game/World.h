@@ -23,34 +23,54 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.*/
 
 #pragma once
+#include <DX3D/Core/Common.h>
 #include <DX3D/Core/Base.h>
-#include <DX3D/Core/Core.h>
-#include <chrono>
+#include <DX3D/Core/Identifiable.h>
+#include <unordered_map>
+#include <vector>
+
 
 namespace dx3d
 {
-	class Game
+	class World final : public Base
 	{
-		dx3d_disable_copy_and_move(Game)
 	public:
-		explicit Game(const GameDesc& desc);
-		virtual ~Game();
+		explicit World(const WorldDesc& desc);
 
-		virtual World& getWorld() noexcept final;
-		virtual Logger& getLogger() noexcept final;
-		virtual void run() final;
-	protected:
-		virtual void onCreate() {}
-		virtual void onUpdate(f32 deltaTime) {}
+		template <typename T>
+		T* createGameObject()
+		{
+			static_assert(std::is_base_of<GameObject, T>::value, "T must inherit from dx3d::GameObject.");
+			static_assert(HasTypeId<T>, "T needs a unique TypeId. Make sure you added dx3d_typeid and applied it to the correct class.");
+			UniquePtr<GameObject> e = std::make_unique<T>(GameObjectDesc{ 
+				{m_logger},
+				*this 
+				});
+			return static_cast<T*>(createGameObjectInternal(e));
+		}
+		void update(f32 deltaTime);
 	private:
-		void onInternalUpdate();
-	private:
-		UniquePtr<Logger> m_logger{};
-		UniquePtr<GraphicsEngine> m_graphicsEngine{};
-		UniquePtr<Display> m_display{};
-		UniquePtr<World> m_world{};
-		bool m_isRunning{ true };
+		GameObject* createGameObjectInternal(UniquePtr<GameObject>& object);
 
-		std::chrono::steady_clock::time_point m_previousTime{};
+	private:
+		enum class EventType
+		{
+			Create = 0
+		};
+		struct GameObjectEvent
+		{
+			GameObject* object{};
+			EventType eventType{};
+		};
+
+	private:
+		std::unordered_map<size_t, std::vector<UniquePtr<GameObject>>> m_objects;
+
+		std::vector<UniquePtr<GameObject>> m_pendingObjects;
+		std::vector<UniquePtr<GameObject>> m_pendingObjectsSwapBuffer;
+
+		std::vector<GameObjectEvent> m_events{};
+		std::vector<GameObjectEvent> m_eventsSwapBuffer{};
 	};
 }
+

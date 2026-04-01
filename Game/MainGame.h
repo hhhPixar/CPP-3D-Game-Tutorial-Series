@@ -22,32 +22,16 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.*/
 
-#include "MainGame.h"
+#pragma once
+#include <DX3D/All.h>
 
 
-int main()
+class MainGame : public dx3d::Game
 {
-	try
-	{
-		MainGame game({ {1280,720},dx3d::Logger::LogLevel::Info });
-		game.run();
-	}
-	catch (const std::runtime_error&)
-	{
-		return EXIT_FAILURE;
-	}
-	catch (const std::invalid_argument&)
-	{
-		return EXIT_FAILURE;
-	}
-	catch (const std::exception&)
-	{
-		return EXIT_FAILURE;
-	}
-	catch (...)
-	{
-		return EXIT_FAILURE;
-	}
+public:
+	explicit MainGame(const dx3d::GameDesc& desc);
+protected:
+	virtual void onCreate();
+	virtual void onUpdate(dx3d::f32 deltaTime);
+};
 
-	return EXIT_SUCCESS;
-}

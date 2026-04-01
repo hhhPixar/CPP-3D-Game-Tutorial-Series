@@ -22,32 +22,30 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.*/
 
-#include "MainGame.h"
+#pragma once
+#include <DX3D/Core/Common.h>
+#include <DX3D/Core/Identifiable.h>
 
-
-int main()
+namespace dx3d
 {
-	try
+	class GameObject : public Identifiable
 	{
-		MainGame game({ {1280,720},dx3d::Logger::LogLevel::Info });
-		game.run();
-	}
-	catch (const std::runtime_error&)
-	{
-		return EXIT_FAILURE;
-	}
-	catch (const std::invalid_argument&)
-	{
-		return EXIT_FAILURE;
-	}
-	catch (const std::exception&)
-	{
-		return EXIT_FAILURE;
-	}
-	catch (...)
-	{
-		return EXIT_FAILURE;
-	}
+		dx3d_typeid(GameObject)
+	public:
+		explicit GameObject(const GameObjectDesc& desc);
 
-	return EXIT_SUCCESS;
+	protected:
+		virtual void onCreate() {}
+		virtual void onUpdate(f32 deltaTime) {}	
+
+	private:
+		size_t getWorldIndex() const noexcept;
+		void setWorldIndex(size_t index) noexcept;
+	private:
+		World& m_world;	
+		size_t m_worldIndex{};
+
+		friend class World;
+	};
 }
+
