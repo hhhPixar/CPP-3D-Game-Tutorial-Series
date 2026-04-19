@@ -22,31 +22,66 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.*/
 
-#include "MainGame.h"
-#include "Objects/MyObject.h"
+#include <DX3D/Component/TransformComponent.h>
+#include <DX3D/Game/World.h>
 
 
-MainGame::MainGame(const dx3d::GameDesc& desc) : dx3d::Game(desc)
+dx3d::TransformComponent::TransformComponent(const ComponentDesc& data) : Component(data)
 {
+	markAsDirty();
 }
 
-void MainGame::onCreate()
+void dx3d::TransformComponent::setPosition(const Vec3& position)
 {
-	Game::onCreate();
-	auto& world = getWorld();
-
-	auto object = world.createGameObject<dx3d::GameObject>();
-	auto myObject = world.createGameObject<MyObject>();
-	if (!myObject) return;
-
-	auto transform = myObject->getComponent<dx3d::TransformComponent>();
-	if (!transform)  return;
-
-	transform->setPosition({ 10,10,10 });
-	transform->setRotation({ 1.57f,0.707f,1.57f });
+	m_position = position;
+	markAsDirty();
 }
 
-void MainGame::onUpdate(dx3d::f32 deltaTime)
+dx3d::Vec3 dx3d::TransformComponent::getPosition() const noexcept
 {
-	Game::onUpdate(deltaTime);
+	return m_position;
+}
+
+void dx3d::TransformComponent::setRotation(const Vec3& rotation)
+{
+	m_rotation = rotation;
+	markAsDirty();
+}
+
+dx3d::Vec3 dx3d::TransformComponent::getRotation() const noexcept
+{
+	return m_rotation;
+}
+
+void dx3d::TransformComponent::setScale(const Vec3& scale)
+{
+	m_scale = scale;
+	markAsDirty();
+}
+
+dx3d::Vec3 dx3d::TransformComponent::getScale() const noexcept
+{
+	return m_scale;
+}
+
+void dx3d::TransformComponent::updateWorldMatrix() noexcept
+{
+	if (!m_dirty) return;
+
+	m_dirty = false;
+	m_worldMat =
+		Mat4x4::scale(m_scale) *
+
+		Mat4x4::rotateX(m_rotation.x) *
+		Mat4x4::rotateY(m_rotation.y) *
+		Mat4x4::rotateZ(m_rotation.z) *
+
+		Mat4x4::translate(m_position);
+}
+
+void dx3d::TransformComponent::markAsDirty()
+{
+	if (m_dirty) return;
+	m_dirty = true;
+	m_world.addDirtyTransformInternal(*this);
 }

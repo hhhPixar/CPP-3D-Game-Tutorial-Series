@@ -25,6 +25,9 @@ SOFTWARE.*/
 #pragma once
 #include <DX3D/Core/Common.h>
 #include <DX3D/Core/Identifiable.h>
+#include <DX3D/Game/Component.h>
+
+#include <unordered_map>
 
 namespace dx3d
 {
@@ -34,17 +37,35 @@ namespace dx3d
 	public:
 		explicit GameObject(const GameObjectDesc& desc);
 
+		template <typename T>
+		T* createOrGetComponent() requires IsRegistered<Component, T>
+		{
+			auto c = getComponent<T>();
+			if (c) return c;
+			UniquePtr<Component> cp = std::make_unique<T>(ComponentDesc{
+								{m_logger},
+								*this,
+								m_world
+				});
+			return static_cast<T*>(createComponentInternal(cp));
+		}
+
+		template <typename T>
+		T* getComponent() requires IsRegistered<Component, T>
+		{
+			return static_cast<T*>(getComponentInternal(T::GetTypeId()));
+		}
+
 	protected:
 		virtual void onCreate() {}
 		virtual void onUpdate(f32 deltaTime) {}	
+	private:
+		Component* createComponentInternal(UniquePtr<Component>& component);
+		Component* getComponentInternal(size_t id);
+	private:
+		std::unordered_map<size_t, UniquePtr<Component>> m_components{};
 
-	private:
-		size_t getWorldIndex() const noexcept;
-		void setWorldIndex(size_t index) noexcept;
-	private:
 		World& m_world;	
-		size_t m_worldIndex{};
-
 		friend class World;
 	};
 }

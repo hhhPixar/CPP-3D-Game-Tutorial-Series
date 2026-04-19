@@ -23,15 +23,22 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.*/
 
 #pragma once
+#include <DX3D/Core/Common.h>
+#include <DX3D/Core/Base.h>
+#include <DX3D/Core/Identifiable.h>
 
-
-#include <DX3D/Game/Component.h>
-
-#include <DX3D/Component/TransformComponent.h>
-
-#include <DX3D/Game/GameObject.h>
-#include <DX3D/Game/World.h>
-
-
-#include <DX3D/Game/Game.h>
+namespace dx3d
+{
+	class Component : public Identifiable
+	{
+		dx3d_typeid(Component)
+	public:
+		explicit Component(const ComponentDesc& desc);
+		GameObject& getGameObject() noexcept;
+	
+	protected:
+		GameObject& m_object;
+		World& m_world;
+	};
+}
 

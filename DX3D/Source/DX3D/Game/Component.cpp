@@ -22,16 +22,14 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.*/
 
-#pragma once
-
-
 #include <DX3D/Game/Component.h>
-
-#include <DX3D/Component/TransformComponent.h>
-
-#include <DX3D/Game/GameObject.h>
 #include <DX3D/Game/World.h>
 
+dx3d::Component::Component(const ComponentDesc& desc) : Identifiable(desc.base), m_object(desc.object), m_world(desc.world)
+{
+}
 
-#include <DX3D/Game/Game.h>
-
+dx3d::GameObject& dx3d::Component::getGameObject() noexcept
+{
+	return m_object;
+}
