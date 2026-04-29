@@ -56,6 +56,7 @@ namespace dx3d
 			return static_cast<T*>(getComponentInternal(T::GetTypeId()));
 		}
 
+		TransformComponent& getTransform() noexcept;
 	protected:
 		virtual void onCreate() {}
 		virtual void onUpdate(f32 deltaTime) {}	
@@ -64,6 +65,7 @@ namespace dx3d
 		Component* getComponentInternal(size_t id);
 	private:
 		std::unordered_map<size_t, UniquePtr<Component>> m_components{};
+		TransformComponent* m_transform{};
 
 		World& m_world;	
 		friend class World;

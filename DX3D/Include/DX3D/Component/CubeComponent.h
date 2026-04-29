@@ -24,44 +24,17 @@ SOFTWARE.*/
 
 #pragma once
 #include <DX3D/Core/Core.h>
-#include <DX3D/Core/Base.h>
+#include <DX3D/Game/Component.h>
 #include <DX3D/Math/Vec3.h>
-#include <DX3D/Math/Vec4.h>
 #include <DX3D/Math/Mat4x4.h>
+
 
 namespace dx3d
 {
-	class GraphicsEngine final: public Base
+	class CubeComponent final : public Component
 	{
+		dx3d_typeid(CubeComponent)
 	public:
-		explicit GraphicsEngine(const GraphicsEngineDesc& desc);
-		virtual ~GraphicsEngine() override;
-
-
-		GraphicsDevice& getGraphicsDevice() noexcept;
-
-		void render(SwapChain& swapChain, f32 deltaTime);
-	private:
-		struct Vertex
-		{
-			Vec3 position;
-			Vec4 color;
-		};
-		struct alignas(16) ConstantData
-		{
-			Mat4x4 world{};
-			Mat4x4 proj{};
-		};
-
-	private:
-		RefPtr<GraphicsDevice> m_graphicsDevice{};
-		RefPtr<DeviceContext> m_deviceContext{};
-		RefPtr<GraphicsPipelineState> m_pipeline{};
-		RefPtr<VertexBuffer> m_vb{};
-		RefPtr<ConstantBuffer> m_cb{};
-		RefPtr<IndexBuffer> m_ib{};
-
-		f32 m_rot{}, m_scale{}, m_pos{ 0.0f };
+		explicit CubeComponent(const ComponentDesc& data);
 	};
 }
-

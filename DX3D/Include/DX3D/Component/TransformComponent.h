@@ -45,6 +45,8 @@ namespace dx3d
 
 		void setScale(const Vec3& scale);
 		Vec3 getScale() const noexcept;
+
+		Mat4x4 getWorldMatrix() noexcept;
 	
 		void updateWorldMatrix() noexcept;
 	private:

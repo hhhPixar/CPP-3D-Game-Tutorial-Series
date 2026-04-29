@@ -24,11 +24,14 @@ SOFTWARE.*/
 
 #include <DX3D/Game/Game.h>
 #include <DX3D/Window/Window.h>
-#include <DX3D/Graphics/GraphicsEngine.h>
+#include <DX3D/Graphics/GraphicsDevice.h>
 #include <DX3D/Core/Logger.h>
 #include <DX3D/Game/Display.h>
 #include <DX3D/Game/World.h>
 #include <DX3D/Game/GameObject.h>
+#include <DX3D/Game/WorldRenderer.h>
+
+
 
 dx3d::Game::Game(const GameDesc& desc)
 {
@@ -37,9 +40,10 @@ dx3d::Game::Game(const GameDesc& desc)
 	DX3DLogInfo("PardCode | C++ 3D Game Tutorial Series");
 	DX3DLogInfo("--------------------------------------");
 
-	m_graphicsEngine = std::make_unique<GraphicsEngine>(GraphicsEngineDesc{*m_logger});
-	m_display = std::make_unique<Display>(DisplayDesc{ {*m_logger,desc.windowSize},m_graphicsEngine->getGraphicsDevice()});
+	m_graphicsDevice = std::make_shared<GraphicsDevice>(GraphicsDeviceDesc{ *m_logger });
+	m_display = std::make_unique<Display>(DisplayDesc{ {*m_logger,desc.windowSize},*m_graphicsDevice });
 	m_world = std::make_unique<World>(WorldDesc{ {*m_logger} });
+	m_worldRenderer = std::make_unique<WorldRenderer>(WorldRendererDesc{ {*m_logger},*m_graphicsDevice });
 
 	DX3DLogInfo("Game initialized.");
 }
@@ -70,5 +74,5 @@ void dx3d::Game::onInternalUpdate()
 
 	m_world->update(deltaTime);
 
-	m_graphicsEngine->render(m_display->getSwapChain(), deltaTime);
+	m_worldRenderer->render(*m_world, m_display->getSwapChain(), deltaTime);
 }

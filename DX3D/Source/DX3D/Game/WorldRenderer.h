@@ -23,16 +23,40 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.*/
 
 #pragma once
+#include <DX3D/Core/Core.h>
+#include <DX3D/Core/Base.h>
+#include <DX3D/Math/Vec3.h>
+#include <DX3D/Math/Vec4.h>
+#include <DX3D/Math/Mat4x4.h>
 
+namespace dx3d
+{
+	class WorldRenderer final: public Base
+	{
+	public:
+		explicit WorldRenderer(const WorldRendererDesc& desc);
+		virtual ~WorldRenderer() override;
 
-#include <DX3D/Game/Component.h>
+		void render(const World& world, SwapChain& swapChain, f32 deltaTime);
+	private:
+		struct Vertex
+		{
+			Vec3 position;
+			Vec4 color;
+		};
+		struct alignas(16) ConstantData
+		{
+			Mat4x4 world{};
+			Mat4x4 proj{};
+		};
 
-#include <DX3D/Component/TransformComponent.h>
-#include <DX3D/Component/CubeComponent.h>
-
-#include <DX3D/Game/GameObject.h>
-#include <DX3D/Game/World.h>
-
-
-#include <DX3D/Game/Game.h>
+	private:
+		GraphicsDevice& m_graphicsDevice;
+		RefPtr<DeviceContext> m_deviceContext{};
+		RefPtr<GraphicsPipelineState> m_pipeline{};
+		RefPtr<VertexBuffer> m_vb{};
+		RefPtr<ConstantBuffer> m_cb{};
+		RefPtr<IndexBuffer> m_ib{};
+	};
+}
 

@@ -29,7 +29,12 @@ SOFTWARE.*/
 
 dx3d::GameObject::GameObject(const GameObjectDesc& desc) : Identifiable(desc.base), m_world(desc.world)
 {
-	createOrGetComponent<TransformComponent>();
+	m_transform = createOrGetComponent<TransformComponent>();
+}
+
+dx3d::TransformComponent& dx3d::GameObject::getTransform() noexcept
+{
+	return *m_transform;
 }
 
 dx3d::Component* dx3d::GameObject::createComponentInternal(UniquePtr<Component>& component)

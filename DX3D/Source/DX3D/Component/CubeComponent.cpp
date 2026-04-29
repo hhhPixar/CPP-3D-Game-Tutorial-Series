@@ -22,17 +22,9 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.*/
 
-#pragma once
-
-
-#include <DX3D/Game/Component.h>
-
-#include <DX3D/Component/TransformComponent.h>
 #include <DX3D/Component/CubeComponent.h>
-
-#include <DX3D/Game/GameObject.h>
 #include <DX3D/Game/World.h>
 
-
-#include <DX3D/Game/Game.h>
-
+dx3d::CubeComponent::CubeComponent(const ComponentDesc& data) : Component(data)
+{
+}

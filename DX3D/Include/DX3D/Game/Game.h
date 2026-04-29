@@ -46,9 +46,12 @@ namespace dx3d
 		void onInternalUpdate();
 	private:
 		UniquePtr<Logger> m_logger{};
-		UniquePtr<GraphicsEngine> m_graphicsEngine{};
+		RefPtr<GraphicsDevice> m_graphicsDevice{};
 		UniquePtr<Display> m_display{};
-		UniquePtr<World> m_world{};
+		UniquePtr<World> m_world{};	
+		
+		UniquePtr<WorldRenderer> m_worldRenderer{};
+
 		bool m_isRunning{ true };
 
 		std::chrono::steady_clock::time_point m_previousTime{};

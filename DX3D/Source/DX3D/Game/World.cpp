@@ -94,3 +94,16 @@ void dx3d::World::addDirtyTransformInternal(TransformComponent& component)
 {
 	m_dirtyTransforms.push_back(&component);
 }
+
+dx3d::Component* const* dx3d::World::getComponentsInternal(size_t typeId, ui32* numComponents) const noexcept
+{
+	auto it = m_components.find(typeId);
+	if (it != m_components.end())
+	{
+		*numComponents = static_cast<ui32>(it->second.size());
+		return it->second.data();
+	}
+
+	*numComponents = 0u;
+	return {};
+}
