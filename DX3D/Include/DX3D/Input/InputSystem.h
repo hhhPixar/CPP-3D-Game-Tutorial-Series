@@ -23,16 +23,47 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.*/
 
 #pragma once
+#include <DX3D/Core/Common.h>
+#include <DX3D/Core/Base.h>
+#include <DX3D/Math/Vec2.h>
+#include <DX3D/Math/Rect.h>
+#include <array>
 
+namespace dx3d
+{
+	class InputSystem final: public Base
+	{
+	public:
+		explicit InputSystem(const InputSystemDesc& desc);
+		virtual ~InputSystem();
+	public:
+		bool isKeyDown(KeyCode key) const;
+		bool isKeyPressed(KeyCode key) const;
+		bool isKeyReleased(KeyCode key) const;
 
-#include <DX3D/Game/Component.h>
+		Vec2 getMousePosition() const noexcept;
+		Vec2 getMouseDelta() const noexcept;
 
-#include <DX3D/Component/TransformComponent.h>
-#include <DX3D/Component/CubeComponent.h>
+		void setCursorVisible(bool visible);
+        void setCursorLocked(bool locked);
+        void setCursorLockArea(const Rect& rect);
 
-#include <DX3D/Game/GameObject.h>
-#include <DX3D/Game/World.h>
+		void update();
+	private:
+		short getInternalKeyCode(const KeyCode& key);
+		void centerCursor();
+	private:
+		std::array<bool, static_cast<std::size_t>(KeyCode::Count)> m_currentKeys{};
+		std::array<bool, static_cast<std::size_t>(KeyCode::Count)> m_previousKeys{};
 
-#include <DX3D/Input/InputSystem.h>
-#include <DX3D/Game/Game.h>
+		Vec2 m_mousePosition{};
+		Vec2 m_previousMousePosition{};
+		Vec2 m_mouseDelta{};
 
+		Rect m_lockArea{};
+
+		bool m_cursorVisible{ true };
+		bool m_cursorLocked{ false };
+	};
+
+}

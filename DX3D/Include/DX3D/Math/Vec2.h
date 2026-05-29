@@ -23,16 +23,18 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.*/
 
 #pragma once
+#include <DX3D/Core/Core.h>
 
 
-#include <DX3D/Game/Component.h>
+namespace dx3d
+{
+	class Vec2
+	{
+	public:
+		Vec2() = default;
+		Vec2(f32 x, f32 y) : x(x), y(y){}
 
-#include <DX3D/Component/TransformComponent.h>
-#include <DX3D/Component/CubeComponent.h>
-
-#include <DX3D/Game/GameObject.h>
-#include <DX3D/Game/World.h>
-
-#include <DX3D/Input/InputSystem.h>
-#include <DX3D/Game/Game.h>
-
+	public:
+		f32 x{}, y{};
+	};
+}

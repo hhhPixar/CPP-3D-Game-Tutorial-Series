@@ -140,6 +140,7 @@
     <ClCompile Include="DX3D\Source\DX3D\Component\TransformComponent.cpp" />
     <ClCompile Include="DX3D\Source\DX3D\Game\Component.cpp" />
     <ClCompile Include="DX3D\Source\DX3D\Game\WorldRenderer.cpp" />
+    <ClCompile Include="DX3D\Source\DX3D\Input\InputSystem.cpp" />
     <ClCompile Include="Game\Objects\MyObject.cpp" />
     <ClCompile Include="DX3D\Source\DX3D\Game\GameObject.cpp" />
     <ClCompile Include="DX3D\Source\DX3D\Game\World.cpp" />
@@ -166,6 +167,8 @@
     <ClInclude Include="DX3D\Include\DX3D\Component\TransformComponent.h" />
     <ClInclude Include="DX3D\Include\DX3D\Core\Identifiable.h" />
     <ClInclude Include="DX3D\Include\DX3D\Game\Component.h" />
+    <ClInclude Include="DX3D\Include\DX3D\Input\InputSystem.h" />
+    <ClInclude Include="DX3D\Include\DX3D\Math\Vec2.h" />
     <ClInclude Include="DX3D\Source\DX3D\Game\WorldRenderer.h" />
     <ClInclude Include="Game\Objects\MyObject.h" />
     <ClInclude Include="DX3D\Include\DX3D\Game\GameObject.h" />

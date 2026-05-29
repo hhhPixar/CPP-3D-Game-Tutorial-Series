@@ -74,6 +74,29 @@ dx3d::Window::Window(const WindowDesc& desc) : Base(desc.base), m_size(desc.size
 }
 
 
+dx3d::Rect dx3d::Window::getClientAreaInScreenSpace()
+{
+	auto hwnd = static_cast<HWND>(m_handle);
+	
+	RECT client{};
+	GetClientRect(hwnd, &client);
+
+	POINT topLeft{ client.left, client.top };
+	POINT bottomRight{ client.right, client.bottom };
+	ClientToScreen(hwnd, &topLeft);
+	ClientToScreen(hwnd, &bottomRight);
+
+	return { 
+		topLeft.x , 
+		topLeft.y , 
+		bottomRight.x - topLeft.x, 
+		bottomRight.y - topLeft.y 
+	};
+}
+
+
+
+
 dx3d::Window::~Window()
 {
 	DestroyWindow(static_cast<HWND>(m_handle));

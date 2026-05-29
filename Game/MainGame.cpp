@@ -35,28 +35,35 @@ void MainGame::onCreate()
 	Game::onCreate();
 	auto& world = getWorld();
 
-	for (auto x = 0; x < 3;x++)
-	{
-		for (auto y = 0; y < 3; y++)
-		{
-			auto object = world.createGameObject<dx3d::GameObject>();
-			object->createOrGetComponent<dx3d::CubeComponent>();
-			object->getTransform().setPosition({ (dx3d::f32) -1 + x,(dx3d::f32) -1 + y, 0 });
-			m_objects[y*3 + x] = object;
-		}
-	}
+	auto object = world.createGameObject<dx3d::GameObject>();
+	object->createOrGetComponent<dx3d::CubeComponent>();
+	m_player = object;
+
+	getInputSystem().setCursorLocked(true);
+	getInputSystem().setCursorVisible(false);
 }
 
 void MainGame::onUpdate(dx3d::f32 deltaTime)
 {
 	Game::onUpdate(deltaTime);
 
-	m_rot += deltaTime * 0.707f;
-	m_scale = std::abs(std::sin(m_rot));
 
-	for (auto i = 0; i < 9; i++)
-	{
-		m_objects[i]->getTransform().setRotation({ m_rot * i, m_rot, m_rot * i });
-		m_objects[i]->getTransform().setScale({ m_scale,m_scale,m_scale });
-	}
+	auto rot = m_player->getTransform().getRotation();
+	rot.x += getInputSystem().getMouseDelta().y * 0.01f;
+	rot.y -= getInputSystem().getMouseDelta().x * 0.01f;
+	m_player->getTransform().setRotation(rot);
+
+
+	auto pos = m_player->getTransform().getPosition();	
+	auto forward = 0.0f;
+	auto rightward = 0.0f;	
+	auto speed = 3.0f;
+	if (getInputSystem().isKeyDown(dx3d::KeyCode::W)) forward = 1.0f;
+	if (getInputSystem().isKeyDown(dx3d::KeyCode::S)) forward = -1.0f; 	
+	if (getInputSystem().isKeyDown(dx3d::KeyCode::D)) rightward = 1.0f;
+	if (getInputSystem().isKeyDown(dx3d::KeyCode::A)) rightward = -1.0f;
+	auto direction = dx3d::Vec3::normalize({ rightward,forward,0 });
+	pos = pos + direction * speed * deltaTime;
+	m_player->getTransform().setPosition(pos);
+
 }

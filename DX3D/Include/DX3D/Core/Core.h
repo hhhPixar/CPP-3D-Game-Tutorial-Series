@@ -38,6 +38,7 @@ namespace dx3d
 	class Base;
 	class Window;
 	class Game;
+	class InputSystem;
 	class GraphicsEngine;
 	class GraphicsDevice;
 	class Logger;
