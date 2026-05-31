@@ -42,6 +42,7 @@ namespace dx3d
 		{
 			UniquePtr<GameObject> e = std::make_unique<T>(GameObjectDesc{ 
 				{m_logger},
+				m_gameContext,
 				*this 
 				});
 			return static_cast<T*>(createGameObjectInternal(e));
@@ -72,7 +73,9 @@ namespace dx3d
 			EventType eventType{};
 		};
 
-	private:		
+	private:	
+		GameContext m_gameContext;
+
 		std::unordered_map<size_t, std::vector<UniquePtr<GameObject>>> m_objects{};
 		std::unordered_map<size_t, std::vector<Component*>> m_components{};
 

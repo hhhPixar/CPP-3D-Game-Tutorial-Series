@@ -109,6 +109,12 @@ namespace dx3d
 	};
 
 
+
+	struct GameContext
+	{
+		InputSystem& input;
+	};
+
 	struct GameDesc
 	{
 		Rect windowSize{ 1280,720 };
@@ -118,11 +124,13 @@ namespace dx3d
 	struct WorldDesc 
 	{
 		BaseDesc base;
+		GameContext gameContext;
 	};
 
 	struct GameObjectDesc
 	{
 		BaseDesc base;
+		GameContext gameContext;
 		World& world;
 	};
 

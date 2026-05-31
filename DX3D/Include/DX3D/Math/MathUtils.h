@@ -22,45 +22,14 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.*/
 
-#include<DX3D/Game/GameObject.h>
-#include<DX3D/Game/Component.h>
-#include<DX3D/Component/TransformComponent.h>
-#include<DX3D/Game/World.h>
+#pragma once
+#include <DX3D/Core/Core.h>
+#include <numbers>
 
-dx3d::GameObject::GameObject(const GameObjectDesc& desc) : Identifiable(desc.base), m_world(desc.world), m_gameContext(desc.gameContext)
+namespace dx3d
 {
-	m_transform = createOrGetComponent<TransformComponent>();
-}
-
-dx3d::TransformComponent& dx3d::GameObject::getTransform() noexcept
-{
-	return *m_transform;
-}
-
-dx3d::World& dx3d::GameObject::getWorld() noexcept
-{
-	return m_world;
-}
-
-dx3d::InputSystem& dx3d::GameObject::getInputSystem() noexcept
-{
-	return m_gameContext.input;
-}
-
-dx3d::Component* dx3d::GameObject::createComponentInternal(UniquePtr<Component>& component)
-{
-	if (!component) return {};
-	auto typeId = component->getTypeId();
-	auto ptr = component.get();
-	if (m_components.find(typeId) != m_components.end()) return {};
-	m_components.emplace(typeId, std::move(component));
-	m_world.addComponentInternal(*ptr);
-	return ptr;
-}
-
-dx3d::Component* dx3d::GameObject::getComponentInternal(size_t id)
-{
-	auto it = m_components.find(id);
-	if (it == m_components.end()) return {};
-	return it->second.get();
+	namespace MathUtils
+	{
+		inline auto PI = std::numbers::pi_v<float>;
+	}
 }

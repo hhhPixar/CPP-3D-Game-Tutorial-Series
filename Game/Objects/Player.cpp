@@ -22,45 +22,46 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.*/
 
-#include<DX3D/Game/GameObject.h>
-#include<DX3D/Game/Component.h>
-#include<DX3D/Component/TransformComponent.h>
-#include<DX3D/Game/World.h>
+#include "Player.h"
 
-dx3d::GameObject::GameObject(const GameObjectDesc& desc) : Identifiable(desc.base), m_world(desc.world), m_gameContext(desc.gameContext)
+Player::Player(const dx3d::GameObjectDesc& desc) : dx3d::GameObject(desc)
 {
-	m_transform = createOrGetComponent<TransformComponent>();
 }
 
-dx3d::TransformComponent& dx3d::GameObject::getTransform() noexcept
+Player::~Player()
 {
-	return *m_transform;
 }
 
-dx3d::World& dx3d::GameObject::getWorld() noexcept
+void Player::onCreate()
 {
-	return m_world;
+	createOrGetComponent<dx3d::CameraComponent>();
 }
 
-dx3d::InputSystem& dx3d::GameObject::getInputSystem() noexcept
+void Player::onUpdate(dx3d::f32 deltaTime)
 {
-	return m_gameContext.input;
-}
+	auto& input = getInputSystem();
 
-dx3d::Component* dx3d::GameObject::createComponentInternal(UniquePtr<Component>& component)
-{
-	if (!component) return {};
-	auto typeId = component->getTypeId();
-	auto ptr = component.get();
-	if (m_components.find(typeId) != m_components.end()) return {};
-	m_components.emplace(typeId, std::move(component));
-	m_world.addComponentInternal(*ptr);
-	return ptr;
-}
 
-dx3d::Component* dx3d::GameObject::getComponentInternal(size_t id)
-{
-	auto it = m_components.find(id);
-	if (it == m_components.end()) return {};
-	return it->second.get();
+	auto sensitivity = 0.001f;
+	auto rot = getTransform().getRotation();
+	rot.x += getInputSystem().getMouseDelta().y * sensitivity;
+	rot.y += getInputSystem().getMouseDelta().x * sensitivity;
+	if (rot.x > 1.57f) rot.x = 1.57f;
+	else if (rot.x < -1.57f) rot.x = -1.57f;
+	getTransform().setRotation(rot);
+
+
+	auto pos = getTransform().getPosition();
+	auto forward = 0.0f;
+	auto right = 0.0f;
+	auto speed = 3.0f;
+	if (getInputSystem().isKeyDown(dx3d::KeyCode::W)) forward = 1.0f;
+	if (getInputSystem().isKeyDown(dx3d::KeyCode::S)) forward = -1.0f;
+	if (getInputSystem().isKeyDown(dx3d::KeyCode::D)) right = 1.0f;
+	if (getInputSystem().isKeyDown(dx3d::KeyCode::A)) right = -1.0f;
+	auto forwardDir = getTransform().forward() * forward;
+	auto rightDir = getTransform().right() * right;
+	auto direction = dx3d::Vec3::normalize(forwardDir + rightDir);
+	pos = pos + direction * speed * deltaTime;
+	getTransform().setPosition(pos);
 }

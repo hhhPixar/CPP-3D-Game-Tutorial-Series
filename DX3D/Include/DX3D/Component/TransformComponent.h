@@ -46,8 +46,13 @@ namespace dx3d
 		void setScale(const Vec3& scale);
 		Vec3 getScale() const noexcept;
 
-		Mat4x4 getWorldMatrix() noexcept;
-	
+		Vec3 forward() ;
+		Vec3 right() ;
+		Vec3 up() ;
+
+		Mat4x4 getAffineWorldMatrix() noexcept;
+		Mat4x4 getRigidWorldMatrix() noexcept;
+
 		void updateWorldMatrix() noexcept;
 	private:
 		void markAsDirty();
@@ -55,8 +60,9 @@ namespace dx3d
 		Vec3 m_position{ 0,0,0 };
 		Vec3 m_rotation{ 0,0,0 };
 		Vec3 m_scale{ 1,1,1 };
-
-		Mat4x4 m_worldMat{};
+		
+		Mat4x4 m_rigidWorldMatrix{};   // rotation + translation only
+		Mat4x4 m_affineWorldMatrix{};  // rotation + translation + scale
 
 		bool m_dirty{};
 	};
