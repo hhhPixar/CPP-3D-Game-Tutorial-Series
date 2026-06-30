@@ -31,7 +31,7 @@ SOFTWARE.*/
 #include <DX3D/Game/World.h>
 #include <DX3D/Game/GameObject.h>
 #include <DX3D/Game/WorldRenderer.h>
-
+#include <DX3D/Resource/ResourceManager.h>
 
 
 dx3d::Game::Game(const GameDesc& desc)
@@ -44,7 +44,11 @@ dx3d::Game::Game(const GameDesc& desc)
 	m_inputSystem = std::make_unique<InputSystem>(InputSystemDesc{ *m_logger });
 	m_graphicsDevice = std::make_shared<GraphicsDevice>(GraphicsDeviceDesc{ *m_logger });
 	m_display = std::make_unique<Display>(DisplayDesc{ {*m_logger,desc.windowSize},*m_graphicsDevice });
-	m_world = std::make_unique<World>(WorldDesc{ BaseDesc{*m_logger}, GameContext{*m_inputSystem} });
+	
+	auto context = SystemContext{ *m_graphicsDevice };
+	m_resourceManager = std::make_unique<ResourceManager>(ResourceManagerDesc{ {*m_logger},context });
+
+	m_world = std::make_unique<World>(WorldDesc{ BaseDesc{*m_logger}, GameContext{*m_inputSystem, *m_resourceManager} });
 	m_worldRenderer = std::make_unique<WorldRenderer>(WorldRendererDesc{ {*m_logger},*m_graphicsDevice });
 
 	m_inputSystem->setCursorLockArea(m_display->getClientAreaInScreenSpace());
@@ -70,6 +74,11 @@ dx3d::Logger& dx3d::Game::getLogger() noexcept
 dx3d::InputSystem& dx3d::Game::getInputSystem() noexcept
 {
 	return *m_inputSystem;
+}
+
+dx3d::ResourceManager& dx3d::Game::getResourceManager() noexcept
+{
+	return *m_resourceManager;
 }
 
 void dx3d::Game::onInternalUpdate()

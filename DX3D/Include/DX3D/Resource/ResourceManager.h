@@ -23,17 +23,29 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.*/
 
 #pragma once
-#include <DX3D/All.h>
+#include <unordered_map>
+#include <string>
+#include <DX3D/Core/Common.h>
+#include <DX3D/Resource/Resource.h>
 
 
-class Player : public dx3d::GameObject
+namespace dx3d
 {
-	dx3d_typeid(Player)
-public:
-	explicit Player(const dx3d::GameObjectDesc& desc);
-	virtual ~Player() override;
-protected:
-	virtual void onCreate();
-	virtual void onUpdate(dx3d::f32 deltaTime);
-};
+	class ResourceManager final: public Base
+	{
+	public:
+		explicit ResourceManager(const ResourceManagerDesc& desc);
+		template<typename T>
+		RefPtr<T> createResourceFromFile(const wchar_t* file_path)
+		{
+			return std::dynamic_pointer_cast<T>(createResourceFromFileConcrete(file_path));
+		}
 
+	private:
+		RefPtr<Resource> createResourceFromFileConcrete(const wchar_t* file_path);
+		ResourceDesc getResourceDesc(const wchar_t* file_path);
+	private:
+		std::unordered_map<std::wstring, RefPtr<Resource>> m_resources{};
+		SystemContext m_context;
+	};
+}

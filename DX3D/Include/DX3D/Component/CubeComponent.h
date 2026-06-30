@@ -36,5 +36,12 @@ namespace dx3d
 		dx3d_typeid(CubeComponent)
 	public:
 		explicit CubeComponent(const ComponentDesc& data);
+
+		void setMaterial(const RefPtr<MaterialResource>& material);
+		MaterialResource* getMaterial();
+
+	private:
+		RefPtr<MaterialResource> m_material{};
+
 	};
 }

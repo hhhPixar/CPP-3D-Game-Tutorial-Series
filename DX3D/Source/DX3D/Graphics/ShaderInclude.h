@@ -23,17 +23,31 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.*/
 
 #pragma once
-#include <DX3D/All.h>
+#include <d3dcompiler.h>
+#include <fstream>
 
-
-class Player : public dx3d::GameObject
+class ShaderInclude : public ID3DInclude
 {
-	dx3d_typeid(Player)
 public:
-	explicit Player(const dx3d::GameObjectDesc& desc);
-	virtual ~Player() override;
-protected:
-	virtual void onCreate();
-	virtual void onUpdate(dx3d::f32 deltaTime);
+	ShaderInclude(){}
+	virtual HRESULT Open(D3D_INCLUDE_TYPE IncludeType, LPCSTR pFileName,
+		LPCVOID pParentData, LPCVOID* ppData, UINT* pBytes)
+	{
+		std::ifstream shaderStream(pFileName);
+		if (!shaderStream) return E_FAIL;
+		std::string shaderCode{
+			std::istreambuf_iterator<char>(shaderStream),
+			std::istreambuf_iterator<char>()
+		};
+		char* shaderCodePtr = new char[shaderCode.size() + 1];
+		memcpy(shaderCodePtr, shaderCode.c_str(), shaderCode.size() + 1);
+		*ppData = shaderCodePtr;
+		*pBytes = static_cast<UINT>(shaderCode.size());
+		return S_OK;
+	}
+	virtual HRESULT Close(LPCVOID pData)
+	{
+		delete[] static_cast<const char*>(pData);
+		return S_OK;
+	}
 };
-

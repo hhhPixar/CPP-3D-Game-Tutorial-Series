@@ -113,6 +113,7 @@ namespace dx3d
 	struct GameContext
 	{
 		InputSystem& input;
+		ResourceManager& resourceManager;
 	};
 
 	struct GameDesc
@@ -192,5 +193,30 @@ namespace dx3d
 	{
 		BaseDesc base;
 	};
+
+	struct ResourceDesc
+	{
+		BaseDesc base;
+		const wchar_t* path{};
+		ResourceManager& manager;
+	};
+
+	struct MaterialResourceDesc
+	{
+		ResourceDesc base;
+		GraphicsDevice& graphicsDevice;
+	};
+
+	struct SystemContext
+	{
+		GraphicsDevice& graphicsDevice;
+	};
+		
+	struct ResourceManagerDesc
+	{
+		BaseDesc base;
+		SystemContext context;
+	};
+
 
 }

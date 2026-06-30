@@ -22,18 +22,26 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.*/
 
-#pragma once
-#include <DX3D/All.h>
-
-
-class Player : public dx3d::GameObject
+struct VSInput
 {
-	dx3d_typeid(Player)
-public:
-	explicit Player(const dx3d::GameObjectDesc& desc);
-	virtual ~Player() override;
-protected:
-	virtual void onCreate();
-	virtual void onUpdate(dx3d::f32 deltaTime);
+    float3 position : POSITION0;
 };
+
+struct VSOutput
+{
+    float4 position : SV_POSITION;
+};
+
+cbuffer ObjectData : register(b0)
+{
+    row_major float4x4 world;
+};
+
+cbuffer CameraData : register(b1)
+{
+    row_major float4x4 view;
+    row_major float4x4 proj;
+};
+
+
 

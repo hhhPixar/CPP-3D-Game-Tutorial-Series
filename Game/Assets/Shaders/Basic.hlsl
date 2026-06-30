@@ -22,18 +22,23 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.*/
 
-#pragma once
-#include <DX3D/All.h>
+#include "DX3D/Assets/Shaders/Common.hlsl"
 
-
-class Player : public dx3d::GameObject
+cbuffer MaterialData : register(b2)
 {
-	dx3d_typeid(Player)
-public:
-	explicit Player(const dx3d::GameObjectDesc& desc);
-	virtual ~Player() override;
-protected:
-	virtual void onCreate();
-	virtual void onUpdate(dx3d::f32 deltaTime);
+    float3 color;
 };
 
+VSOutput VSMain(VSInput input)
+{
+    VSOutput output;
+    output.position = mul(float4(input.position, 1), world);
+    output.position = mul(output.position, view);
+    output.position = mul(output.position, proj);
+    return output;
+}
+
+float4 PSMain(VSOutput input) : SV_TARGET
+{
+    return float4(color.rgb, 1);
+}

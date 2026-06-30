@@ -23,17 +23,19 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.*/
 
 #pragma once
-#include <DX3D/All.h>
+#include <DX3D/Core/Core.h>
+#include <DX3D/Core/Base.h>
+#include <string>
 
-
-class Player : public dx3d::GameObject
+namespace dx3d
 {
-	dx3d_typeid(Player)
-public:
-	explicit Player(const dx3d::GameObjectDesc& desc);
-	virtual ~Player() override;
-protected:
-	virtual void onCreate();
-	virtual void onUpdate(dx3d::f32 deltaTime);
-};
+	class Resource : public Base
+	{
+	public:
+		explicit Resource(const ResourceDesc& desc);
+	protected:
+		std::wstring m_path{};
+		ResourceManager& m_manager;
+	};
 
+}
