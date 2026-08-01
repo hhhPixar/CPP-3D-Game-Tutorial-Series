@@ -35,39 +35,52 @@ void MainGame::onCreate()
 	Game::onCreate();
 	auto& world = getWorld();
 
-	//floor
+	//pedestal
 	{
-		auto floorTex = getResourceManager().createResourceFromFile<dx3d::TextureResource>(L"Game/Assets/Textures/stone_tiles_02_diff_1k.jpg");
-		auto floorMat = getResourceManager().createResourceFromFile<dx3d::MaterialResource>(L"Game/Assets/Shaders/MaterialDataShader.hlsl");
-		if (floorMat)
+		auto brickTex = getResourceManager().createResourceFromFile<dx3d::TextureResource>(L"Game/Assets/Textures/red_brick_03_diff_1k.jpg");
+		auto pedestalMat = getResourceManager().createResourceFromFile<dx3d::MaterialResource>(L"Game/Assets/Shaders/MaterialShader.hlsl");
+		if (pedestalMat)
 		{
-			auto matData = dx3d::Vec3(1, 1, 1);
-			floorMat->setData(std::as_bytes(std::span{ &matData, 1 }));
-			floorMat->setTexture(0, floorTex);
+			float spec = 0.0f;
+			pedestalMat->setData(std::as_bytes(std::span(&spec, 1)));
+			pedestalMat->setTexture(0, brickTex);
 		}
 
-		auto floor = world.createGameObject<dx3d::GameObject>();
-		floor->createOrGetComponent<dx3d::CubeComponent>();
-		auto comp = floor->createOrGetComponent<dx3d::CubeComponent>();
-		comp->setMaterial(floorMat);
-		floor->getTransform().setScale({ 6.8f, 0.1f, 6.8f });
-		floor->getTransform().setPosition({ 0, 0, 0 });	
+		auto pedestal = world.createGameObject<dx3d::GameObject>();
+		pedestal->createOrGetComponent<dx3d::CubeComponent>();
+		auto comp = pedestal->createOrGetComponent<dx3d::CubeComponent>();
+		comp->setMaterial(pedestalMat);
+		pedestal->getTransform().setScale({ 2, 2, 2 });
+		pedestal->getTransform().setPosition({ 0, -1, 0 });
 	}
 	
-	//teapot
+	//marble bust
 	{
-		auto teapotMesh = getResourceManager().createResourceFromFile<dx3d::MeshResource>(L"Game/Assets/Meshes/teapot.obj");
-
-		auto brickTex = getResourceManager().createResourceFromFile<dx3d::TextureResource>(L"Game/Assets/Textures/red_brick_03_diff_1k.jpg");
-		auto brickMat = getResourceManager().createResourceFromFile<dx3d::MaterialResource>(L"Game/Assets/Shaders/BasicShader.hlsl");
-		if (brickMat) brickMat->setTexture(0, brickTex);
-
+		auto marbleBustTex = getResourceManager().createResourceFromFile<dx3d::TextureResource>(L"Game/Assets/Textures/marble_bust_01_diff_1k.jpg");
+		auto marbleBustMesh = getResourceManager().createResourceFromFile<dx3d::MeshResource>(L"Game/Assets/Meshes/marble_bust_01.obj");
+		auto marbleBustMat = getResourceManager().createResourceFromFile<dx3d::MaterialResource>(L"Game/Assets/Shaders/MaterialShader.hlsl");
+		if (marbleBustMat) 
+		{
+			float spec = 1.0f;
+			marbleBustMat->setData(std::as_bytes(std::span(&spec, 1)));
+			marbleBustMat->setTexture(0, marbleBustTex);
+		}
 		auto mesh = world.createGameObject<dx3d::GameObject>();
 		auto comp = mesh->createOrGetComponent<dx3d::MeshComponent>();
-		comp->setMesh(teapotMesh);
-		comp->setMaterial(0, brickMat);
-		mesh->getTransform().setPosition({ 0, 1, 0 });
-		mesh->getTransform().setScale({ 2, 2, 2 });
+		comp->setMesh(marbleBustMesh);
+		comp->setMaterial(0, marbleBustMat);
+		mesh->getTransform().setScale({ 4, 4, 4 });
+		mesh->getTransform().setPosition({ 0, 0, 0 });
+	}
+
+	//white light
+	{
+		auto light = world.createGameObject<dx3d::GameObject>();
+		m_whiteLight = light;
+		light->createOrGetComponent<dx3d::DirectionaLightComponent>();
+		auto comp = light->createOrGetComponent<dx3d::DirectionaLightComponent>();
+		comp->setColor({ 1,1,1 });
+		light->getTransform().setRotation({0.707f,0.0f,0 });
 	}
 
 	//player
@@ -84,4 +97,6 @@ void MainGame::onCreate()
 void MainGame::onUpdate(dx3d::f32 deltaTime)
 {
 	Game::onUpdate(deltaTime);
+	m_roty += 0.57f * deltaTime;
+	m_whiteLight->getTransform().setRotation(dx3d::Vec3(0.707f, m_roty, 0));
 }

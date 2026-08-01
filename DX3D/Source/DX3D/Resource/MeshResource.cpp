@@ -85,6 +85,15 @@ dx3d::MeshResource::MeshResource(const MeshResourceDesc& desc) : Resource(desc.b
 					};
 				}
 
+				if (index.normal_index >= 0)
+				{
+					vertex.normal = Vec3{
+					attribs.normals[index.normal_index * 3 + 0],
+					attribs.normals[index.normal_index * 3 + 1],
+					-attribs.normals[index.normal_index * 3 + 2]
+					};
+				}
+
 				materialIndices.push_back(static_cast<dx3d::ui32>(listVertices.size()));
 				listVertices.push_back(vertex);
 			}

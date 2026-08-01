@@ -37,6 +37,7 @@ SOFTWARE.*/
 #include <DX3D/Component/CubeComponent.h>
 #include <DX3D/Component/CameraComponent.h>
 #include <DX3D/Component/MeshComponent.h>
+#include <DX3D/Component/DirectionalLightComponent.h>
 
 #include <DX3D/Resource/MaterialResource.h>
 #include <DX3D/Resource/TextureResource.h>
@@ -56,6 +57,7 @@ dx3d::WorldRenderer::WorldRenderer(const WorldRendererDesc& desc): Base(desc.bas
 
 	m_objectCb = device.createConstantBuffer({ {}, sizeof(ObjectData) });
 	m_cameraCb = device.createConstantBuffer({ {}, sizeof(CameraData) });
+	m_envCb = device.createConstantBuffer({ {}, sizeof(EnvironmentData) });
 	m_materialCb = device.createConstantBuffer({ {}, dx3d::MaterialResource::MaxDataSize });
 
 	m_sampler = device.createSampler({});
@@ -67,6 +69,7 @@ void dx3d::WorldRenderer::render(const World& world, SwapChain& swapChain, f32 d
 
 	auto& context = *m_deviceContext;
 	context.clearAndSetBackBuffer(swapChain, { 0.27f, 0.39f, 0.55f, 1.0f });
+	//context.clearAndSetBackBuffer(swapChain, { 0,0,0,1 });
 	context.setViewportSize(size);
 
 	Sampler* samplers[] = { m_sampler.get() };
@@ -76,19 +79,39 @@ void dx3d::WorldRenderer::render(const World& world, SwapChain& swapChain, f32 d
 
 	auto& cameraCb = *m_cameraCb;
 	auto& objectCb = *m_objectCb;
+	auto& envCb = *m_envCb;
 	auto& materialCb = *m_materialCb;
+
+
+	EnvironmentData envData{};
+	//directional lights
+	{
+		auto components = world.getComponents<dx3d::DirectionaLightComponent>(numComponents);
+		for (auto i : std::views::iota(0u, numComponents))
+		{
+			auto component = components[i];
+			auto& transform = component->getGameObject().getTransform();
+			auto dir = transform.getRigidWorldMatrix().row(2);
+
+			envData.directionalLightData.intensity = component->getIntensity();
+			envData.directionalLightData.direction = { dir.x,dir.y,dir.z };
+			envData.directionalLightData.color = component->getColor();
+			break;
+		}
+		context.updateConstantBuffer(envCb, std::as_bytes(std::span{ &envData, 1 }));
+	}
 
 	//cameras
 	{	
 		CameraData cameraData{};
 		auto components = world.getComponents<CameraComponent>(numComponents);
 		for (auto i : std::views::iota(0u, numComponents))
-		{	
-		
+		{		
 			auto component = components[i];
 			cameraData.view = component->getViewMatrix();
 			component->setViewportSize(size);
 			cameraData.proj = component->getProjectionMatrix();
+			cameraData.position = component->getGameObject().getTransform().getPosition();
 			context.updateConstantBuffer(cameraCb, std::as_bytes(std::span{ &cameraData, 1 }));
 			break;
 		}
@@ -108,12 +131,13 @@ void dx3d::WorldRenderer::render(const World& world, SwapChain& swapChain, f32 d
 			
 			if (material)
 			{	
-				objectData.world = transform.getAffineWorldMatrix();
+				objectData.affineWorld = transform.getAffineWorldMatrix();
+				objectData.rigidWorld = transform.getRigidWorldMatrix();
 
 				context.setGraphicsPipelineState(material->getGraphicsPipelineState());
 				context.updateConstantBuffer(objectCb, std::as_bytes(std::span{&objectData, 1 }));
 				context.updateConstantBuffer(materialCb, material->getData());
-				ConstantBuffer* cbs[] = { &objectCb, &cameraCb, &materialCb};
+				ConstantBuffer* cbs[] = { &objectCb, &cameraCb, &envCb, &materialCb};
 				context.setConstantBuffers(std::span<ConstantBuffer*>{cbs});
 
 				m_textures.clear();
@@ -144,7 +168,9 @@ void dx3d::WorldRenderer::render(const World& world, SwapChain& swapChain, f32 d
 			if (!meshRes) continue;
 			auto& mesh = *meshRes;
 
-			objectData.world = comp->getGameObject().getTransform().getAffineWorldMatrix();
+			objectData.affineWorld = comp->getGameObject().getTransform().getAffineWorldMatrix();
+			objectData.rigidWorld = comp->getGameObject().getTransform().getRigidWorldMatrix();
+
 
 			context.setVertexBuffer(mesh.getVertexBuffer());
 			context.setIndexBuffer(mesh.getIndexBuffer());
@@ -162,7 +188,7 @@ void dx3d::WorldRenderer::render(const World& world, SwapChain& swapChain, f32 d
 				context.setGraphicsPipelineState(material->getGraphicsPipelineState());
 				context.updateConstantBuffer(objectCb, std::as_bytes(std::span{&objectData, 1 }));
 				context.updateConstantBuffer(materialCb, material->getData());
-				ConstantBuffer* cbs[] = { &objectCb, &cameraCb, &materialCb};
+				ConstantBuffer* cbs[] = { &objectCb, &cameraCb, &envCb, &materialCb};
 				context.setConstantBuffers(std::span<ConstantBuffer*>{cbs});
 
 				m_textures.clear();

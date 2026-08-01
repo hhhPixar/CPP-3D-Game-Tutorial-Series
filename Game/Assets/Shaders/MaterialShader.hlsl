@@ -24,25 +24,21 @@ SOFTWARE.*/
 
 #include "DX3D/Assets/Shaders/Common.hlsl"
 
-cbuffer MaterialData : register(b2)
+cbuffer MaterialData : register(b3)
 {
-    float3 color;
+    float specularStrength;
 };
 
 Texture2D Diffuse : register(t0);
 
-VSOutput VSMain(VSInput input)
+void VSMain(inout MaterialVSOut output)
 {
-    VSOutput output;
-    output.position = mul(float4(input.position, 1), world);
-    output.position = mul(output.position, view);
-    output.position = mul(output.position, proj);
-    output.texcoord = input.texcoord;
-    return output;
 }
 
-float4 PSMain(VSOutput input) : SV_TARGET
+void PSMain(inout MaterialPSOut output)
 {
-    float4 diffuse = Diffuse.Sample(DefaultSampler, input.texcoord);
-    return float4(color.rgb * diffuse.rgb, 1);
+    float4 diffuse = Diffuse.Sample(DefaultSampler, TextureCoordinate);
+    output.diffuse = float4(diffuse.rgb, 1);
+    output.specular = float4(1, 1, 1, 1) * specularStrength;
+    output.shininess = 64.0f;
 }

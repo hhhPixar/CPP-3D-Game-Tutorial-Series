@@ -43,9 +43,9 @@ dx3d::MaterialResource::MaterialResource(const MaterialResourceDesc& desc) : Res
 	};
 
 	auto vsBinary = m_graphicsDevice.compileShader({ shaderFileStr.c_str(), shaderCode.c_str(),
-		shaderCode.size(), "VSMain", ShaderType::VertexShader });
+		shaderCode.size(), "_VSMain", ShaderType::VertexShader });
 	auto psBinary = m_graphicsDevice.compileShader({ shaderFileStr.c_str(), shaderCode.c_str(),
-		shaderCode.size(), "PSMain", ShaderType::PixelShader });
+		shaderCode.size(), "_PSMain", ShaderType::PixelShader });
 
 	m_layout = m_graphicsDevice.createGraphicsPipelineLayout({ vsBinary, psBinary });
 	m_pipeline = m_graphicsDevice.createGraphicsPipelineState({ *m_layout });

@@ -22,27 +22,34 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.*/
 
-#include "DX3D/Assets/Shaders/Common.hlsl"
+#include <DX3D/Component/DirectionalLightComponent.h>
+#include <DX3D/Game/World.h>
+#include <DX3D/Math/Vec3.h>
+#include <DX3D/Math/Vec2.h>
+#include <DX3D/Math/Mat4x4.h>
+#include <DX3D/Graphics/GraphicsDevice.h>
 
-cbuffer MaterialData : register(b2)
+
+dx3d::DirectionaLightComponent::DirectionaLightComponent(const ComponentDesc& data) : Component(data)
 {
-    float3 color;
-};
-
-Texture2D Diffuse : register(t0);
-
-VSOutput VSMain(VSInput input)
-{
-    VSOutput output;
-    output.position = mul(float4(input.position, 1), world);
-    output.position = mul(output.position, view);
-    output.position = mul(output.position, proj);
-    output.texcoord = input.texcoord;
-    return output;
 }
 
-float4 PSMain(VSOutput input) : SV_TARGET
+void dx3d::DirectionaLightComponent::setIntensity(dx3d::f32 intensity)
 {
-    float4 diffuse = Diffuse.Sample(DefaultSampler, input.texcoord);
-    return float4(color.rgb*diffuse.rgb, 1);
+	m_intensity = intensity;
+}
+
+dx3d::f32 dx3d::DirectionaLightComponent::getIntensity() const noexcept
+{
+	return m_intensity;
+}
+
+void dx3d::DirectionaLightComponent::setColor(const Vec3& color)
+{
+	m_color = color;
+}
+
+dx3d::Vec3 dx3d::DirectionaLightComponent::getColor() const noexcept
+{
+	return m_color;
 }

@@ -41,12 +41,24 @@ namespace dx3d
 	private:
 		struct alignas(16) ObjectData
 		{
-			Mat4x4 world{};
+			Mat4x4 affineWorld{};
+			Mat4x4 rigidWorld{};
 		};
 		struct alignas(16) CameraData
 		{
 			Mat4x4 view{};
 			Mat4x4 proj{};
+			Vec3 position{};
+		};
+		struct alignas(16) DirectionalLightData
+		{
+			Vec3 color{}; f32 pad{};
+			Vec3 direction{};
+			f32 intensity{};
+		};
+		struct alignas(16) EnvironmentData
+		{
+			DirectionalLightData directionalLightData;
 		};
 
 	private:
@@ -54,6 +66,7 @@ namespace dx3d
 		RefPtr<DeviceContext> m_deviceContext{};
 		RefPtr<ConstantBuffer> m_cameraCb{};
 		RefPtr<ConstantBuffer> m_objectCb{};
+		RefPtr<ConstantBuffer> m_envCb{};
 		RefPtr<ConstantBuffer> m_materialCb{};
 		RefPtr<Sampler> m_sampler{};
 

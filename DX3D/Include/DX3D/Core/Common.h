@@ -246,6 +246,7 @@ namespace dx3d
 	{
 		Vec3 position{};
 		Vec2 texcoord{};
+		Vec3 normal{};
 	};
 
 	struct MaterialSlot
