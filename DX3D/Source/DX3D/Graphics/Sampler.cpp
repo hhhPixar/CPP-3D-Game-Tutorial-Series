@@ -22,28 +22,17 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.*/
 
-#pragma once
+#include "Sampler.h"
 
+dx3d::Sampler::Sampler(const SamplerDesc& desc, const GraphicsResourceDesc& gDesc) : GraphicsResource(gDesc)
+{
+	D3D11_SAMPLER_DESC sampler_desc = {};
+	sampler_desc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampler_desc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampler_desc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampler_desc.Filter = D3D11_FILTER_ANISOTROPIC;
+	sampler_desc.MinLOD = 0.0f;
+	sampler_desc.MaxLOD = D3D11_FLOAT32_MAX;
 
-#include <DX3D/Game/Component.h>
-
-#include <DX3D/Resource/TextureResource.h>
-#include <DX3D/Resource/MaterialResource.h>
-#include <DX3D/Resource/ResourceManager.h>
-
-
-#include <DX3D/Component/TransformComponent.h>
-#include <DX3D/Component/CubeComponent.h>
-#include <DX3D/Component/CameraComponent.h>
-
-
-
-#include <DX3D/Game/GameObject.h>
-#include <DX3D/Game/World.h>
-
-
-
-#include <DX3D/Input/InputSystem.h>
-#include <DX3D/Game/Game.h>
-
-
+	DX3DGraphicsLogThrowOnFail(m_device.CreateSamplerState(&sampler_desc, &m_sampler), "CreateSamplerState failed.");
+}

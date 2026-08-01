@@ -23,27 +23,17 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.*/
 
 #pragma once
+#include <DX3D/Graphics/GraphicsResource.h>
 
+namespace dx3d
+{
+	class Sampler final : public GraphicsResource
+	{
+	public:
+		Sampler(const SamplerDesc& desc, const GraphicsResourceDesc& gDesc);
 
-#include <DX3D/Game/Component.h>
-
-#include <DX3D/Resource/TextureResource.h>
-#include <DX3D/Resource/MaterialResource.h>
-#include <DX3D/Resource/ResourceManager.h>
-
-
-#include <DX3D/Component/TransformComponent.h>
-#include <DX3D/Component/CubeComponent.h>
-#include <DX3D/Component/CameraComponent.h>
-
-
-
-#include <DX3D/Game/GameObject.h>
-#include <DX3D/Game/World.h>
-
-
-
-#include <DX3D/Input/InputSystem.h>
-#include <DX3D/Game/Game.h>
-
-
+	private:
+		Microsoft::WRL::ComPtr<ID3D11SamplerState> m_sampler{};
+		friend class DeviceContext;
+	};
+}

@@ -22,28 +22,34 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.*/
 
-#pragma once
-
-
-#include <DX3D/Game/Component.h>
-
 #include <DX3D/Resource/TextureResource.h>
-#include <DX3D/Resource/MaterialResource.h>
 #include <DX3D/Resource/ResourceManager.h>
+#include <DX3D/Graphics/GraphicsDevice.h>
+#include <fstream>
+#include <filesystem>
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb-image/stb_image.h>
 
 
-#include <DX3D/Component/TransformComponent.h>
-#include <DX3D/Component/CubeComponent.h>
-#include <DX3D/Component/CameraComponent.h>
+dx3d::TextureResource::TextureResource(const TextureResourceDesc& desc) : Resource(desc.base)
+{
+	std::filesystem::path textureFile = desc.base.path;
+	auto textureFileStr = textureFile.string();
 
+	auto width{0}, height{0}, channels{0};
+	auto pixels = stbi_load(
+		textureFileStr.c_str(),
+		&width,
+		&height,
+		&channels,
+		STBI_rgb_alpha // Force RGBA
+	);
 
+	if (!pixels) DX3DLogThrowError("Failed to load texture file {}", textureFileStr.c_str());
+	m_texture = desc.graphicsDevice.createTexture({ {width,height}, pixels });
+}
 
-#include <DX3D/Game/GameObject.h>
-#include <DX3D/Game/World.h>
-
-
-
-#include <DX3D/Input/InputSystem.h>
-#include <DX3D/Game/Game.h>
-
-
+dx3d::Texture& dx3d::TextureResource::getTexture()
+{
+	return *m_texture;
+}

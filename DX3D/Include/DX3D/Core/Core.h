@@ -51,6 +51,9 @@ namespace dx3d
 	class VertexShaderSignature;
 	class ConstantBuffer;
 	class IndexBuffer;
+	class Texture;
+	class Sampler;
+	class GraphicsPipelineLayout;
 
 	class World;
 	class GameObject;
@@ -62,6 +65,8 @@ namespace dx3d
 	class ResourceManager;
 	class Resource;
 	class MaterialResource;
+	class TextureResource;
+
 
 
 	using i32 = int;
