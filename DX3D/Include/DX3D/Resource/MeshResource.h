@@ -23,59 +23,23 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.*/
 
 #pragma once
-#include <stdexcept>
-#include <memory>
-
-#define dx3d_disable_copy_and_move(Class)     \
-protected:\
-    Class(const Class&) = delete;        \
-    Class& operator=(const Class&) = delete; \
-    Class(Class&&) = delete;             \
-    Class& operator=(Class&&) = delete;
+#include <DX3D/Resource/Resource.h>
+#include <vector>
 
 namespace dx3d
 {
-	class Base;
-	class Window;
-	class Game;
-	class InputSystem;
-	class GraphicsEngine;
-	class GraphicsDevice;
-	class Logger;
-	class SwapChain;
-	class Display;
-	class DeviceContext;
-	class ShaderBinary;
-	class GraphicsPipelineState;
-	class VertexBuffer;
-	class VertexShaderSignature;
-	class ConstantBuffer;
-	class IndexBuffer;
-	class Texture;
-	class Sampler;
-	class GraphicsPipelineLayout;
+	class MeshResource final : public Resource
+	{
+	public:
+		explicit MeshResource(const MeshResourceDesc& desc);
+		const MaterialSlot * getMaterialSlots(ui32& numSlots) const noexcept;
 
-	class World;
-	class GameObject;
-	class Component;
-	class TransformComponent;
-
-	class WorldRenderer;
-
-	class ResourceManager;
-	class Resource;
-	class MaterialResource;
-	class TextureResource;
-	class MeshResource;
-
-
-
-
-	using i32 = int;
-	using ui32 = unsigned int;
-	using f32 = float;
-	using d64 = double;
-
-	template <typename T> using RefPtr = std::shared_ptr<T>;
-	template <typename T> using UniquePtr = std::unique_ptr<T>;
+		ui32 getNumMaterialSlots() const noexcept;
+		const VertexBuffer& getVertexBuffer() const noexcept;
+		const IndexBuffer& getIndexBuffer() const noexcept;
+	private:
+		RefPtr<VertexBuffer> m_vertexBuffer{};
+		RefPtr<IndexBuffer> m_indexBuffer{};
+		std::vector<MaterialSlot> m_matSlots{};
+	};
 }

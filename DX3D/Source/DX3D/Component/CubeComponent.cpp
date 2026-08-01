@@ -32,13 +32,7 @@ SOFTWARE.*/
 
 dx3d::CubeComponent::CubeComponent(const ComponentDesc& data) : Component(data)
 {
-	struct Vertex
-	{
-		Vec3 position;
-		Vec2 texCoord;
-	};
-
-	static const Vertex vertexList[] =
+	static const MeshVertex vertexList[] =
 	{
 		// Front (+Z)
 		{{-0.5f, -0.5f,  0.5f}, {0, 1}},
@@ -87,8 +81,7 @@ dx3d::CubeComponent::CubeComponent(const ComponentDesc& data) : Component(data)
 		20, 22, 21,  20, 23, 22    // Bottom
 	};
 
-
-	static const auto vb = m_context.device.createVertexBuffer({ vertexList, std::size(vertexList), sizeof(Vertex) });
+	static const auto vb = m_context.device.createVertexBuffer({ vertexList, std::size(vertexList), sizeof(MeshVertex)});
 	static const auto ib = m_context.device.createIndexBuffer({ indexList, std::size(indexList) });
 
 	m_vb = vb;

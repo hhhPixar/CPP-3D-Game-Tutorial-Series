@@ -48,4 +48,3 @@ cbuffer CameraData : register(b1)
 };
 
 
-

@@ -34,57 +34,50 @@ void MainGame::onCreate()
 {
 	Game::onCreate();
 	auto& world = getWorld();
-	auto woodTex = getResourceManager().createResourceFromFile<dx3d::TextureResource>(L"Game/Assets/Textures/red_brick_03_diff_1k.jpg");
-	auto floorTex = getResourceManager().createResourceFromFile<dx3d::TextureResource>(L"Game/Assets/Textures/stone_tiles_02_diff_1k.jpg");
 
-
+	//floor
 	{
-		auto basicMat = getResourceManager().createResourceFromFile<dx3d::MaterialResource>(L"Game/Assets/Shaders/Basic.hlsl");
-		if (basicMat)
+		auto floorTex = getResourceManager().createResourceFromFile<dx3d::TextureResource>(L"Game/Assets/Textures/stone_tiles_02_diff_1k.jpg");
+		auto floorMat = getResourceManager().createResourceFromFile<dx3d::MaterialResource>(L"Game/Assets/Shaders/MaterialDataShader.hlsl");
+		if (floorMat)
 		{
 			auto matData = dx3d::Vec3(1, 1, 1);
-			basicMat->setData(std::as_bytes(std::span{ &matData, 1 }));
-			basicMat->setTexture(0, floorTex);
+			floorMat->setData(std::as_bytes(std::span{ &matData, 1 }));
+			floorMat->setTexture(0, floorTex);
 		}
 
 		auto floor = world.createGameObject<dx3d::GameObject>();
 		floor->createOrGetComponent<dx3d::CubeComponent>();
 		auto comp = floor->createOrGetComponent<dx3d::CubeComponent>();
-		comp->setMaterial(basicMat);
+		comp->setMaterial(floorMat);
 		floor->getTransform().setScale({ 6.8f, 0.1f, 6.8f });
-		floor->getTransform().setPosition({ 0, 0, 0 });
-		
+		floor->getTransform().setPosition({ 0, 0, 0 });	
 	}
-
-	srand((unsigned int)time(NULL));
-
-	for (auto y = -2; y < 3; y++)
+	
+	//teapot
 	{
-		for (auto x = -2; x < 3; x++)
-		{
-			auto basicMat = getResourceManager().createResourceFromFile<dx3d::MaterialResource>(L"Game/Assets/Shaders/Basic.hlsl");
-			if (basicMat)
-			{
-				auto matData = dx3d::Vec3(1, 1, 1);
-				basicMat->setData(std::as_bytes(std::span{ &matData, 1 }));
-				basicMat->setTexture(0, woodTex);
-			}
+		auto teapotMesh = getResourceManager().createResourceFromFile<dx3d::MeshResource>(L"Game/Assets/Meshes/teapot.obj");
 
-			auto cube = world.createGameObject<dx3d::GameObject>();
-			auto comp = cube->createOrGetComponent<dx3d::CubeComponent>();
-			comp->setMaterial(basicMat);
-			auto roty = (rand() % 628) / 100.0f;
-			cube->getTransform().setScale({ 0.5,0.5,0.5 });
-			cube->getTransform().setPosition({ x * 1.4f, 0.25f + 0.05f, y * 1.4f });
-			cube->getTransform().setRotation({ 0,roty,0 });
-		}
+		auto brickTex = getResourceManager().createResourceFromFile<dx3d::TextureResource>(L"Game/Assets/Textures/red_brick_03_diff_1k.jpg");
+		auto brickMat = getResourceManager().createResourceFromFile<dx3d::MaterialResource>(L"Game/Assets/Shaders/BasicShader.hlsl");
+		if (brickMat) brickMat->setTexture(0, brickTex);
+
+		auto mesh = world.createGameObject<dx3d::GameObject>();
+		auto comp = mesh->createOrGetComponent<dx3d::MeshComponent>();
+		comp->setMesh(teapotMesh);
+		comp->setMaterial(0, brickMat);
+		mesh->getTransform().setPosition({ 0, 1, 0 });
+		mesh->getTransform().setScale({ 2, 2, 2 });
 	}
 
-	auto player = world.createGameObject<Player>();
-	player->getTransform().setPosition({ 0, 1, -2});
+	//player
+	{
+		auto player = world.createGameObject<Player>();
+		player->getTransform().setPosition({ 0, 1, -2 });
 
-	getInputSystem().setCursorLocked(true);
-	getInputSystem().setCursorVisible(false);
+		getInputSystem().setCursorLocked(true);
+		getInputSystem().setCursorVisible(false);
+	}
 }
 
 

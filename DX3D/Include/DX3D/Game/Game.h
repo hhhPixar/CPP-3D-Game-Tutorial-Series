@@ -37,7 +37,7 @@ namespace dx3d
 		virtual ~Game();
 
 		virtual World& getWorld() noexcept final;
-		virtual Logger& getLogger() noexcept final;
+		virtual Logger& getLogger() const noexcept final;
 		virtual InputSystem& getInputSystem() noexcept final;
 		virtual ResourceManager& getResourceManager() noexcept final;
 

@@ -66,7 +66,7 @@ dx3d::World& dx3d::Game::getWorld() noexcept
 	return *m_world;
 }
 
-dx3d::Logger& dx3d::Game::getLogger() noexcept
+dx3d::Logger& dx3d::Game::getLogger() const noexcept
 {
 	return *m_logger;
 }

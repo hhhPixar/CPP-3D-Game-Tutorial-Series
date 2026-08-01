@@ -22,30 +22,48 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.*/
 
-#pragma once
-
-
-#include <DX3D/Game/Component.h>
-
-#include <DX3D/Resource/TextureResource.h>
-#include <DX3D/Resource/MaterialResource.h>
-#include <DX3D/Resource/MeshResource.h>
-#include <DX3D/Resource/ResourceManager.h>
-
-
-#include <DX3D/Component/TransformComponent.h>
-#include <DX3D/Component/CubeComponent.h>
-#include <DX3D/Component/CameraComponent.h>
 #include <DX3D/Component/MeshComponent.h>
-
-
-
 #include <DX3D/Game/GameObject.h>
 #include <DX3D/Game/World.h>
-
-
-
-#include <DX3D/Input/InputSystem.h>
 #include <DX3D/Game/Game.h>
+#include <DX3D/Graphics/GraphicsDevice.h>
+#include <DX3D/Resource/MaterialResource.h>
+#include <DX3D/Resource/MeshResource.h>
 
 
+dx3d::MeshComponent::MeshComponent(const ComponentDesc& data) : Component(data)
+{
+}
+
+void dx3d::MeshComponent::setMesh(const RefPtr<MeshResource>& mesh)
+{
+	m_mesh = mesh;
+	if (m_mesh) m_materials.resize(m_mesh->getNumMaterialSlots());
+	else m_materials.resize(0);
+}
+
+dx3d::MeshResource* dx3d::MeshComponent::getMesh() const noexcept
+{
+	return m_mesh.get();
+}
+
+void dx3d::MeshComponent::setMaterial(dx3d::ui32 index, const RefPtr<MaterialResource>& material)
+{
+	if (index >= m_materials.size())
+	{
+		DX3DLogError("Index {} is out of bounds for the materials list (size: {}). Ensure setMesh() has been called before setting materials.", index, m_materials.size());
+		return;
+	}
+
+	m_materials[index] = material;
+}
+
+dx3d::MaterialResource* dx3d::MeshComponent::getMaterial(ui32 index) const noexcept
+{
+	if (index >= m_materials.size())
+	{
+		DX3DLogError("Index {} is out of bounds for the materials list (size: {}).", index, m_materials.size());
+		return {};
+	}
+	return m_materials[index].get();
+}

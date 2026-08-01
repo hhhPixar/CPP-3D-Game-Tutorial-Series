@@ -73,7 +73,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>Bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>Intermediate\$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>DX3D/Include;DX3D/Source;DX3D/Vendor/stb-image/include/;$(IncludePath)</IncludePath>
+    <IncludePath>DX3D/Include;DX3D/Source;DX3D/Vendor/stb-image/include/;DX3D/Vendor/tinyobjloader/include/;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -168,6 +168,8 @@
     <ClCompile Include="DX3D\Source\DX3D\Resource\TextureResource.cpp" />
     <ClCompile Include="DX3D\Source\DX3D\Graphics\Sampler.cpp" />
     <ClCompile Include="DX3D\Source\DX3D\Graphics\GraphicsPipelineLayout.cpp" />
+    <ClCompile Include="DX3D\Source\DX3D\Resource\MeshResource.cpp" />
+    <ClCompile Include="DX3D\Source\DX3D\Component\MeshComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DX3D\Include\DX3D\Component\CameraComponent.h" />
@@ -214,6 +216,8 @@
     <ClInclude Include="DX3D\Include\DX3D\Resource\TextureResource.h" />
     <ClInclude Include="DX3D\Source\DX3D\Graphics\Sampler.h" />
     <ClInclude Include="DX3D\Source\DX3D\Graphics\GraphicsPipelineLayout.h" />
+    <ClInclude Include="DX3D\Include\DX3D\Resource\MeshResource.h" />
+    <ClInclude Include="DX3D\Include\DX3D\Component\MeshComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shadertoolsconfig.json" />

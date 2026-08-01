@@ -36,9 +36,11 @@ SOFTWARE.*/
 #include <DX3D/Component/TransformComponent.h>
 #include <DX3D/Component/CubeComponent.h>
 #include <DX3D/Component/CameraComponent.h>
+#include <DX3D/Component/MeshComponent.h>
 
 #include <DX3D/Resource/MaterialResource.h>
 #include <DX3D/Resource/TextureResource.h>
+#include <DX3D/Resource/MeshResource.h>
 
 #include <DX3D/Math/Vec3.h>
 #include <fstream>
@@ -76,6 +78,7 @@ void dx3d::WorldRenderer::render(const World& world, SwapChain& swapChain, f32 d
 	auto& objectCb = *m_objectCb;
 	auto& materialCb = *m_materialCb;
 
+	//cameras
 	{	
 		CameraData cameraData{};
 		auto components = world.getComponents<CameraComponent>(numComponents);
@@ -91,6 +94,8 @@ void dx3d::WorldRenderer::render(const World& world, SwapChain& swapChain, f32 d
 		}
 	}
 
+
+	//cubes
 	{	
 		ObjectData objectData{};
 		auto components = world.getComponents<CubeComponent>(numComponents);
@@ -123,6 +128,53 @@ void dx3d::WorldRenderer::render(const World& world, SwapChain& swapChain, f32 d
 				context.setVertexBuffer(component->getVertexBuffer());
 				context.setIndexBuffer(component->getIndexBuffer());
 				context.drawIndexedTriangleList(component->getIndexBuffer().getIndexListSize(), 0u, 0u);
+			}
+		}
+	}
+
+
+	//meshes
+	{
+		ObjectData objectData{};
+		auto components = world.getComponents<MeshComponent>(numComponents);
+		for (auto i : std::views::iota(0u, numComponents))
+		{
+			auto comp = components[i];
+			auto meshRes = comp->getMesh();
+			if (!meshRes) continue;
+			auto& mesh = *meshRes;
+
+			objectData.world = comp->getGameObject().getTransform().getAffineWorldMatrix();
+
+			context.setVertexBuffer(mesh.getVertexBuffer());
+			context.setIndexBuffer(mesh.getIndexBuffer());
+
+			auto numSlots = 0u;
+			auto slots = mesh.getMaterialSlots(numSlots);
+			
+			for (auto u : std::views::iota(0u, numSlots))
+			{
+				auto slot = slots[u];
+				auto material = comp->getMaterial(u);
+				if (!material) continue;
+				auto numTexs = material->getNumTextures();
+
+				context.setGraphicsPipelineState(material->getGraphicsPipelineState());
+				context.updateConstantBuffer(objectCb, std::as_bytes(std::span{&objectData, 1 }));
+				context.updateConstantBuffer(materialCb, material->getData());
+				ConstantBuffer* cbs[] = { &objectCb, &cameraCb, &materialCb};
+				context.setConstantBuffers(std::span<ConstantBuffer*>{cbs});
+
+				m_textures.clear();
+				m_textures.resize(material->getNumTextures());
+				for (auto t: std::views::iota(0u, m_textures.size()))
+				{
+					auto tex = material->getTexture(t);
+					if (tex) m_textures[t] = &tex->getTexture();
+				}
+				context.setTextures(std::span<Texture*>{m_textures});
+
+				context.drawIndexedTriangleList(slot.indexCount, 0, slot.startIndex);
 			}
 		}
 	}

@@ -22,60 +22,22 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.*/
 
-#pragma once
-#include <stdexcept>
-#include <memory>
+#include "DX3D/Assets/Shaders/Common.hlsl"
 
-#define dx3d_disable_copy_and_move(Class)     \
-protected:\
-    Class(const Class&) = delete;        \
-    Class& operator=(const Class&) = delete; \
-    Class(Class&&) = delete;             \
-    Class& operator=(Class&&) = delete;
+Texture2D Diffuse : register(t0);
 
-namespace dx3d
+VSOutput VSMain(VSInput input)
 {
-	class Base;
-	class Window;
-	class Game;
-	class InputSystem;
-	class GraphicsEngine;
-	class GraphicsDevice;
-	class Logger;
-	class SwapChain;
-	class Display;
-	class DeviceContext;
-	class ShaderBinary;
-	class GraphicsPipelineState;
-	class VertexBuffer;
-	class VertexShaderSignature;
-	class ConstantBuffer;
-	class IndexBuffer;
-	class Texture;
-	class Sampler;
-	class GraphicsPipelineLayout;
+    VSOutput output;
+    output.position = mul(float4(input.position, 1), world);
+    output.position = mul(output.position, view);
+    output.position = mul(output.position, proj);
+    output.texcoord = input.texcoord;
+    return output;
+}
 
-	class World;
-	class GameObject;
-	class Component;
-	class TransformComponent;
-
-	class WorldRenderer;
-
-	class ResourceManager;
-	class Resource;
-	class MaterialResource;
-	class TextureResource;
-	class MeshResource;
-
-
-
-
-	using i32 = int;
-	using ui32 = unsigned int;
-	using f32 = float;
-	using d64 = double;
-
-	template <typename T> using RefPtr = std::shared_ptr<T>;
-	template <typename T> using UniquePtr = std::unique_ptr<T>;
+float4 PSMain(VSOutput input) : SV_TARGET
+{
+    float4 diffuse = Diffuse.Sample(DefaultSampler, input.texcoord);
+    return float4(diffuse.rgb, 1);
 }

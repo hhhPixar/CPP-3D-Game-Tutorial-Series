@@ -27,7 +27,7 @@ SOFTWARE.*/
 
 namespace dx3d
 {
-	class TextureResource : public Resource
+	class TextureResource final : public Resource
 	{
 	public:
 		explicit TextureResource(const TextureResourceDesc& desc);

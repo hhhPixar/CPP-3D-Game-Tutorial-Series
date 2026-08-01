@@ -78,3 +78,6 @@ wwwroot/
 # Backup files
 *.bak
 *.swp
+
+
+!Game/Assets/Meshes/*.obj

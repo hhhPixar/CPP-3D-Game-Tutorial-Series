@@ -26,6 +26,8 @@ SOFTWARE.*/
 #include <DX3D/Core/Core.h>
 #include <DX3D/Core/Logger.h>
 #include <DX3D/Math/Rect.h>
+#include <DX3D/Math/Vec3.h>
+#include <DX3D/Math/Vec2.h>
 
 namespace dx3d
 {
@@ -203,6 +205,11 @@ namespace dx3d
 		ResourceManager& manager;
 	};
 
+	struct MeshResourceDesc
+	{
+		ResourceDesc base;
+		GraphicsDevice& graphicsDevice;
+	};
 	struct MaterialResourceDesc
 	{
 		ResourceDesc base;
@@ -233,4 +240,24 @@ namespace dx3d
 	struct SamplerDesc
 	{
 	};
+
+
+	struct MeshVertex
+	{
+		Vec3 position{};
+		Vec2 texcoord{};
+	};
+
+	struct MaterialSlot
+	{
+		ui32 startIndex{};
+		ui32 indexCount{};
+		i32 materialIndex{};
+	};
+
+
+
+
+
+
 }

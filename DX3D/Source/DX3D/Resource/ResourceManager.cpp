@@ -25,6 +25,8 @@ SOFTWARE.*/
 #include <DX3D/Resource/ResourceManager.h>
 #include <DX3D/Resource/MaterialResource.h>
 #include <DX3D/Resource/TextureResource.h>
+#include <DX3D/Resource/MeshResource.h>
+
 #include <filesystem>
 
 dx3d::ResourceManager::ResourceManager(const ResourceManagerDesc& desc) : Base(desc.base), m_context(desc.context)
@@ -58,6 +60,8 @@ dx3d::RefPtr<dx3d::Resource> dx3d::ResourceManager::createResourceFromFileConcre
 			resPtr = std::make_shared<MaterialResource>(MaterialResourceDesc{ getResourceDesc(file_path), m_context.graphicsDevice });
 		if (!ext.compare(L".jpg") || !ext.compare(L".png"))
 			resPtr = std::make_shared<TextureResource>(TextureResourceDesc{ getResourceDesc(file_path), m_context.graphicsDevice });
+		if (!ext.compare(L".obj"))
+			resPtr = std::make_shared<MeshResource>(MeshResourceDesc{ getResourceDesc(file_path), m_context.graphicsDevice });
 	}
 	catch (...)
 	{
