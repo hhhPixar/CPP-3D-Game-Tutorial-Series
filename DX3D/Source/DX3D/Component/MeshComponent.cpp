@@ -22,6 +22,15 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.*/
 
+// ===================================================================
+// MeshComponent 实现：网格资源与多材质槽位的管理
+// ===================================================================
+// 【关键概念】
+//  - 材质槽位（material slot）：一个网格可拆成多段（如 .obj 里多个 group），
+//    每段有 startIndex（起始索引）和 indexCount（索引数），可挂不同材质。
+//    WorldRenderer 渲染时遍历每个槽位，取其材质和索引范围逐段绘制。
+//  - m_materials 数组长度由网格的槽数决定：setMesh 时调用 resize 对齐。
+//  - 越界保护：setMaterial/getMaterial 都检查 index，越界记日志而非崩溃。
 #include <DX3D/Component/MeshComponent.h>
 #include <DX3D/Game/GameObject.h>
 #include <DX3D/Game/World.h>
@@ -31,10 +40,14 @@ SOFTWARE.*/
 #include <DX3D/Resource/MeshResource.h>
 
 
+// 构造函数：仅初始化基类，网格和材质均为空。实际网格靠 setMesh 注入。
 dx3d::MeshComponent::MeshComponent(const ComponentDesc& data) : Component(data)
 {
 }
 
+// 设置网格资源，并按网格的材质槽数量调整材质数组。
+// 有网格时 resize 到槽数（预备好每个槽位的材质位，初始为空）；传空则清空。
+// 这样保证 m_materials.size() 始终与当前网格的段数一致，避免 setMaterial 越界。
 void dx3d::MeshComponent::setMesh(const RefPtr<MeshResource>& mesh)
 {
 	m_mesh = mesh;
@@ -42,11 +55,14 @@ void dx3d::MeshComponent::setMesh(const RefPtr<MeshResource>& mesh)
 	else m_materials.resize(0);
 }
 
+// 返回网格资源原始指针（可能为空）。调用方据此判断是否有网格可画。
 dx3d::MeshResource* dx3d::MeshComponent::getMesh() const noexcept
 {
 	return m_mesh.get();
 }
 
+// 给第 index 个槽位设置材质。越界检查：若 index 超出当前 m_materials 大小，
+// 记错误日志并返回（提示调用方先 setMesh 再 setMaterial），不修改任何数据。
 void dx3d::MeshComponent::setMaterial(dx3d::ui32 index, const RefPtr<MaterialResource>& material)
 {
 	if (index >= m_materials.size())
@@ -58,6 +74,8 @@ void dx3d::MeshComponent::setMaterial(dx3d::ui32 index, const RefPtr<MaterialRes
 	m_materials[index] = material;
 }
 
+// 取第 index 个槽位的材质。越界返回空指针并记日志。
+// 返回空表示该段无材质，WorldRenderer 会跳过该段不绘制（continue）。
 dx3d::MaterialResource* dx3d::MeshComponent::getMaterial(ui32 index) const noexcept
 {
 	if (index >= m_materials.size())

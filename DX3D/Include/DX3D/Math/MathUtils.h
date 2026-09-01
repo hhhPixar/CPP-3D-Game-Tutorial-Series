@@ -25,11 +25,26 @@ SOFTWARE.*/
 #pragma once
 #include <DX3D/Core/Core.h>
 #include <numbers>
+// ============================================================
+// 子系统：Math 数学库
+// 文件：MathUtils.h
+// 职责：提供数学常量。目前只有圆周率 PI。
+// 在引擎中的位置：被 Mat4x4 的投影/旋转函数引用——例如
+//   perspectiveFovLH 用 PI 校验视场角上限。把常量集中存放，
+//   避免各处自定义 PI 数值不一致。
+// 给初学者：PI（π≈3.14159）是圆周率，弧度制下"半圈=π，
+//   一圈=2π"。三角函数 std::sin/std::cos 的参数都用弧度，
+//   所以把角度转弧度时常乘 PI/180。
+// ============================================================
 
 namespace dx3d
 {
+	// MathUtils 命名空间：集中放置数学常量，供全引擎复用。
 	namespace MathUtils
 	{
+		// 圆周率 π（float 精度）。std::numbers::pi_v<float> 是 C++20
+		//   标准库提供的编译期精确常量；inline 让头文件里定义也不会
+		//   重复链接。auto 推导为 float。
 		inline auto PI = std::numbers::pi_v<float>;
 	}
 }
